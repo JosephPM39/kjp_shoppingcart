@@ -32,15 +32,3 @@ services:
     networks:
       - sc
       - global
-
-  shopping-cart:
-    image: kjp-sc-dev-env:v1.0
-    volumes:
-      - ./:/workspace/kjp_shoppingcart:rw/
-      - ./:/IdeaProjects/kjp_shoppingcart:rw/
-    command: "tail -f /dev/null"
-    ports:
-      - "8080:8080"
-    networks:
-      - sc
-      - global
