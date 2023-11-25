@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16.1-alpine3.18
+    environment:
+      POSTGRES_DB: "shopping_cart"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./storage/postgres_data:/var/lib/postgres/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@test.test
+      - PGADMIN_DEFAULT_PASSWORD=test
+    ports:
+        - "80:80"
+
+  shopping-cart:
+    image: kjp-sc-dev-env:v1.0
+    volumes:
+      - ./:/workspace/kjp_shoppingcart:rw/
+      - ./:/IdeaProjects/kjp_shoppingcart:rw/
+    command: "tail -f /dev/null"
+    ports:
+      - "8080:8080"

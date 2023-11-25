@@ -1,0 +1,8 @@
+{
+  "name": "Shopping Cart Dev",
+  "image": "kjp-sc-dev-env:v1.0",
+  "shutdownAction": "none",
+  "forwardPorts": [
+    8080
+  ]
+}
