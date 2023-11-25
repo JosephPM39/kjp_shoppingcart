@@ -1,5 +1,12 @@
 version: '3.9'
 
+networks:
+  sc:
+    name: global
+    external: true
+  global:
+    external: true
+
 services:
   postgres:
     image: postgres:16.1-alpine3.18
@@ -11,14 +18,20 @@ services:
       - "5432:5432"
     volumes:
       - ./storage/postgres_data:/var/lib/postgres/data
+    networks:
+      - sc
+      - global
 
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      - PGADMIN_DEFAULT_EMAIL=test@test.test
-      - PGADMIN_DEFAULT_PASSWORD=test
+      - PGADMIN_DEFAULT_EMAIL=test@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=1234
     ports:
         - "80:80"
+    networks:
+      - sc
+      - global
 
   shopping-cart:
     image: kjp-sc-dev-env:v1.0
@@ -28,3 +41,6 @@ services:
     command: "tail -f /dev/null"
     ports:
       - "8080:8080"
+    networks:
+      - sc
+      - global
