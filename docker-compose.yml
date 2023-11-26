@@ -22,6 +22,24 @@ services:
       - sc
       - global
 
+  keycloak:
+    image: bitnami/keycloak:22.0.5-debian-11-r2
+    environment:
+      KEYCLOAK_ADMIN_USER: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
+      KEYCLOAK_DATABASE_VENDOR: "postgresql"
+      KEYCLOAK_DATABASE_HOST: "postgres"
+      KEYCLOAK_DATABASE_PORT: "5432"
+      KEYCLOAK_DATABASE_NAME: "keycloak"
+      KEYCLOAK_DATABASE_USER: "admin"
+      KEYCLOAK_DATABASE_PASSWORD: "admin"
+    ports:
+      - "8081:8080"
+      - "8443:8443"
+    networks:
+      - sc
+      - global
+
   pgadmin:
     image: dpage/pgadmin4
     environment:
