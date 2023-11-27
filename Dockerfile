@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 RUN apt-get update
 
-RUN apt-get install -y nocache curl git wget gpg
+RUN apt-get install -y nocache curl git wget gpg socat
 
 RUN mkdir -p /workspace/kjp_shoppingcart
 
@@ -25,3 +25,4 @@ COPY . .
 EXPOSE 8080
 
 CMD [ "mvnw" ]
+ENTRYPOINT socat TCP-LISTEN:8081,fork,reuseaddr TCP:keycloak:8081
