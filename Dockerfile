@@ -25,4 +25,5 @@ COPY . .
 EXPOSE 8080
 
 CMD [ "mvnw" ]
-ENTRYPOINT socat TCP-LISTEN:8081,fork,reuseaddr TCP:keycloak:8081
+ENTRYPOINT socat TCP-LISTEN:8081,fork,reuseaddr TCP:keycloak:8081 & \
+           socat TCP-LISTEN:5432,fork,reuseaddr TCP:shoppingcart_db:5432

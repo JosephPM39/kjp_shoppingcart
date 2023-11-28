@@ -1,6 +1,6 @@
 package com.kjp.shoppingcart.controllers;
 
-import com.kjp.shoppingcart.entities.Categories;
+import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.services.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ public class CategoriesController {
     }
 
     @GetMapping
-    public List<Categories> getAll() {
+    public List<CategoryEntity> getAll() {
         return categoriesService.getAll();
     }
 }

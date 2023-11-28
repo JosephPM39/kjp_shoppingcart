@@ -1,6 +1,6 @@
 package com.kjp.shoppingcart.services;
 
-import com.kjp.shoppingcart.entities.Categories;
+import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.repositories.ICategoriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class CategoriesService {
         this.categoriesRepository = categoriesRepository;
     }
 
-    public List<Categories> getAll() {
+    public List<CategoryEntity> getAll() {
         return categoriesRepository.findAll();
     }
 }
