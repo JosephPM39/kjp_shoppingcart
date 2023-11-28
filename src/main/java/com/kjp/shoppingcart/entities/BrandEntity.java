@@ -7,11 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity(name = "categories")
-public class Categories extends BaseEntity {
-    @Column(length = 40)
+@Entity(name = "brands")
+public class BrandEntity extends BaseEntity {
+    @Column(nullable = false)
     private String name;
-
-    @Column
-    private String description;
 }
