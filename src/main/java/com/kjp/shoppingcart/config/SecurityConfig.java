@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -25,9 +24,10 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(http -> {
+                    http.requestMatchers("/api/sign-in").permitAll();
+                    http.requestMatchers("/api/welcome").permitAll();
                     http.requestMatchers("/login").permitAll();
-                    // http.anyRequest().authenticated();
-                    http.anyRequest().permitAll();
+                    http.anyRequest().authenticated();
                 })
                 .oauth2Login(oauth ->{
                     oauth.loginPage("/login");
@@ -37,6 +37,13 @@ public class SecurityConfig {
                 })
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                })
+                .logout(logout -> {
+                    logout.logoutUrl("/api/sign-out");
+                    logout.invalidateHttpSession(true);
+                    logout.permitAll();
+                    logout.clearAuthentication(true);
+                    logout.logoutSuccessUrl("/api/welcome");
                 })
                 .build();
     }

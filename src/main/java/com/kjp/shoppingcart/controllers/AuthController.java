@@ -1,6 +1,7 @@
 package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.dto.CredentialsDTO;
+import com.kjp.shoppingcart.dto.TokenDTO;
 import com.kjp.shoppingcart.services.IAuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,18 @@ public class AuthController {
     private IAuthService authService;
 
     @PostMapping("/sign-in")
-    public String login(@RequestBody CredentialsDTO credentials) {
+    public TokenDTO login(@RequestBody CredentialsDTO credentials) {
         return authService.signIn(credentials);
     }
+
+    @PostMapping("/sign-out")
+    public String logout() {
+        return "Logout successful";
+    }
+
+    @GetMapping("/welcome")
+    public String welcome() {
+        return "Welcome";
+    }
+
 }
