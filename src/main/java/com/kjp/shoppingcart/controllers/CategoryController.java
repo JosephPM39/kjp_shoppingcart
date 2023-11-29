@@ -23,28 +23,33 @@ public class CategoryController {
         return categoriesService.getAll();
     }
 
-    @GetMapping("/:id")
+    @GetMapping("/{id}")
     public CategoryEntity getById(@PathVariable UUID id) {
-        return new CategoryEntity();
+        return categoriesService.getById(id);
     }
 
-    @PostMapping("/:id/products")
+    @PostMapping("/{id}/products")
     public void addProducts(@PathVariable UUID id, @RequestBody Object productsId) {
 
     }
 
     @PostMapping
     public void create(@RequestBody CategoryEntity category) {
-
+        categoriesService.create(category);
     }
 
-    @PostMapping("/:id")
+    @PatchMapping("/{id}")
+    public void update(@PathVariable UUID id, @RequestBody CategoryEntity category) {
+        categoriesService.update(id, category);
+    }
+
+    @PostMapping("/{id}")
     public void disable(@PathVariable UUID id) {
 
     }
 
-    @DeleteMapping("/:id")
+    @DeleteMapping("/{id}")
     public void remove(@PathVariable UUID id) {
-
+        categoriesService.remove(id);
     }
 }
