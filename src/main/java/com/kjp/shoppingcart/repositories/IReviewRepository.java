@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface IReviewRepository extends JpaRepository<ReviewEntity, UUID> {
+public interface IReviewRepository extends IBaseRepository<ReviewEntity, UUID> {
 }
