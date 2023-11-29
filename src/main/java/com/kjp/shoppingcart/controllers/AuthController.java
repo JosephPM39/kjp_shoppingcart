@@ -1,12 +1,21 @@
 package com.kjp.shoppingcart.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.kjp.shoppingcart.dto.CredentialsDTO;
+import com.kjp.shoppingcart.services.IAuthService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
+@RequestMapping("/api")
 public class AuthController {
-    @GetMapping("/logino")
-    public String login() {
-        return "Hola";
+
+    @Autowired
+    private IAuthService authService;
+
+    @PostMapping("/sign-in")
+    public String login(@RequestBody CredentialsDTO credentials) {
+        return authService.signIn(credentials);
     }
 }
