@@ -46,8 +46,8 @@ public class CategoriesService {
             throwNotFoundCategory(id);
         }
         CategoryEntity newCategory = oldCategory.get();
-        newCategory.setName(category.getName());
-        newCategory.setDescription(category.getDescription());
+        newCategory.setName(ifFirstIsNullReturnSecond(category.getName(), newCategory.getName()));
+        newCategory.setDescription(ifFirstIsNullReturnSecond(category.getDescription(), newCategory.getDescription()));
 
         categoriesRepository.save(newCategory);
     }
@@ -65,5 +65,10 @@ public class CategoriesService {
         throwNotFoundCategory(id);
     }
 
-    
+    private <T extends Object> T ifFirstIsNullReturnSecond(T first, T second) {
+        if (first == null) {
+            return second;
+        }
+        return first;
+    }
 }

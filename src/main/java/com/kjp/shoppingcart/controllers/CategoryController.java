@@ -2,6 +2,8 @@ package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.services.CategoriesService;
+import com.kjp.shoppingcart.validations.groups.CreateGroup;
+import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +14,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/categories")
-@Validated
 public class CategoryController {
     private final CategoriesService categoriesService;
 
@@ -37,12 +38,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    public void create(@Valid @RequestBody CategoryEntity category) {
+    public void create(@Validated(CreateGroup.class) @RequestBody CategoryEntity category) {
         categoriesService.create(category);
     }
 
     @PatchMapping("/{id}")
-    public void update(@PathVariable UUID id, @RequestBody CategoryEntity category) {
+    public void update(@PathVariable UUID id, @Validated(UpdateGroup.class) @RequestBody CategoryEntity category) {
         categoriesService.update(id, category);
     }
 
