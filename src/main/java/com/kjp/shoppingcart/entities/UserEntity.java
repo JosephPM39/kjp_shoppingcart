@@ -29,4 +29,7 @@ public class UserEntity extends BaseEntity {
     @Column(name = "last_name", length = 40, nullable = false)
     private String lastName;
 
+    @Column
+    private boolean banned;
+
 }

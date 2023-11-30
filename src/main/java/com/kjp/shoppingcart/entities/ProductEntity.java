@@ -39,4 +39,7 @@ public class ProductEntity extends BaseEntity {
    )
    private List<CategoryEntity> categories;
 
+   @Column
+   private boolean disabled;
+
 }

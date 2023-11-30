@@ -21,4 +21,7 @@ public class CategoryEntity extends BaseEntity {
     @Size(max = 255, min = 0, groups = {CreateGroup.class, UpdateGroup.class})
     @Column
     private String description;
+
+    @Column
+    private boolean disabled;
 }
