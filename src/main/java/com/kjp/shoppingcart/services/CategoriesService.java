@@ -1,8 +1,9 @@
 package com.kjp.shoppingcart.services;
 
 import com.kjp.shoppingcart.entities.CategoryEntity;
-import com.kjp.shoppingcart.exceptions.ResourceWithIdNotFoundException;
+import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import com.kjp.shoppingcart.repositories.ICategoryRepository;
+import com.kjp.shoppingcart.specifications.EntitySpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,15 @@ public class CategoriesService {
         return category.get();
     }
 
+    public CategoryEntity getByName(String name) {
+        Optional<CategoryEntity> category = categoriesRepository.findOne(EntitySpecification.fieldEquals("name", name));
+        if (category.isPresent()) {
+            return category.get();
+        }
+        String error = "Category with the \"name\": ".concat(name).concat(" not found");
+        throw new ResourceNotFoundException(error);
+    }
+
     public void create(CategoryEntity category) {
         categoriesRepository.save(category);
     }
@@ -54,7 +64,7 @@ public class CategoriesService {
 
     private void throwNotFoundCategory(UUID id) {
         String error = "Category with ID: ".concat(id.toString()).concat(" Not Found");
-        throw new ResourceWithIdNotFoundException(error);
+        throw new ResourceNotFoundException(error);
     }
 
     private void throwErrorIfCategoryNotExistsById(UUID id) {

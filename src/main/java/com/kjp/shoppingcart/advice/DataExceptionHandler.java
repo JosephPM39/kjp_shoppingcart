@@ -1,6 +1,6 @@
 package com.kjp.shoppingcart.advice;
 
-import com.kjp.shoppingcart.exceptions.ResourceWithIdNotFoundException;
+import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +20,8 @@ public class DataExceptionHandler {
         return new ResponseEntity<>("Data Integrity Violation", HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(ResourceWithIdNotFoundException.class)
-    public ResponseEntity<String> handleResourceWithIdNotFound(ResourceWithIdNotFoundException ex) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceWithIdNotFound(ResourceNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
