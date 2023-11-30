@@ -12,7 +12,6 @@ import org.springframework.web.client.HttpClientErrorException;
 public class AuthExceptionHandler {
 
     @ExceptionHandler(HttpClientErrorException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleRestClientException(HttpClientErrorException ex) {
         HttpStatusCode status = ex.getStatusCode();
         String message = ex.getResponseBodyAsString();

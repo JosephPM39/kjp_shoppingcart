@@ -2,7 +2,9 @@ package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.services.CategoriesService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/categories")
+@Validated
 public class CategoryController {
     private final CategoriesService categoriesService;
 
@@ -34,7 +37,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public void create(@RequestBody CategoryEntity category) {
+    public void create(@Valid @RequestBody CategoryEntity category) {
         categoriesService.create(category);
     }
 

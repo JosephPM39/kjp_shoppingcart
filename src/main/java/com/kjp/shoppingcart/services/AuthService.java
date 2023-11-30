@@ -1,6 +1,6 @@
 package com.kjp.shoppingcart.services;
 
-import com.kjp.shoppingcart.dto.CredentialsDTO;
+import com.kjp.shoppingcart.dto.SignInCredentialsDTO;
 import com.kjp.shoppingcart.dto.TokenDTO;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -38,7 +36,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public TokenDTO signIn(CredentialsDTO credentials) {
+    public TokenDTO signIn(SignInCredentialsDTO credentials) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
