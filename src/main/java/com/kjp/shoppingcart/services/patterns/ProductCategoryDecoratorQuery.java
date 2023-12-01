@@ -1,10 +1,10 @@
-package com.kjp.shoppingcart.services.product_queries;
+package com.kjp.shoppingcart.services.patterns;
 
-public class ProductNameDecoratorQuery extends ProductDecoratorQuery {
+public class ProductCategoryDecoratorQuery extends ProductDecoratorQuery {
 
-    Query query;
+    private Query query;
 
-    public ProductNameDecoratorQuery(IProductQuery productQuery) {
+    public ProductCategoryDecoratorQuery(IProductQuery productQuery) {
         super(productQuery);
         query = productQuery.getQuery();
     }
@@ -13,10 +13,9 @@ public class ProductNameDecoratorQuery extends ProductDecoratorQuery {
     public Query getQuery() {
         return new Query.QueryBuilder().table(query.getTable())
                 .fields(query.getFields())
-                .condition(" WHERE name = :name ")
+                .condition(query.getCondition())
                 .join(query.getJoin())
                 .orderBy(query.getOrderBy())
                 .build();
     }
-
 }

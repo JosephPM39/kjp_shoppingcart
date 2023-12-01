@@ -1,4 +1,4 @@
-package com.kjp.shoppingcart.services.product_queries;
+package com.kjp.shoppingcart.services.patterns;
 
 public interface IProductQuery {
     public Query getQuery();

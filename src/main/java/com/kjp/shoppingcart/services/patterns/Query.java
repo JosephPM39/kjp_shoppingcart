@@ -1,4 +1,4 @@
-package com.kjp.shoppingcart.services.product_queries;
+package com.kjp.shoppingcart.services.patterns;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
