@@ -4,6 +4,7 @@ import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import com.kjp.shoppingcart.repositories.ICategoryRepository;
 import com.kjp.shoppingcart.specifications.EntitySpecification;
+import com.kjp.shoppingcart.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,11 +56,10 @@ public class CategoriesService {
         if (!oldCategory.isPresent()) {
             throwNotFoundCategory(id);
         }
-        CategoryEntity newCategory = oldCategory.get();
-        newCategory.setName(ifFirstIsNullReturnSecond(category.getName(), newCategory.getName()));
-        newCategory.setDescription(ifFirstIsNullReturnSecond(category.getDescription(), newCategory.getDescription()));
 
-        categoriesRepository.save(newCategory);
+        CategoryEntity categoryWithChanges = ObjectUtils.copiarPropiedades(category, oldCategory.get(), CategoryEntity.class);
+
+        categoriesRepository.save(categoryWithChanges);
     }
 
     private void throwNotFoundCategory(UUID id) {
