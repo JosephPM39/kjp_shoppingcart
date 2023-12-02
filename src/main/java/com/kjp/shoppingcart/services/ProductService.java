@@ -6,6 +6,8 @@ import com.kjp.shoppingcart.repositories.IProductRepository;
 import com.kjp.shoppingcart.services.patterns.product_search_strategy.OrderEnum;
 import com.kjp.shoppingcart.services.patterns.product_search_strategy.Pagination;
 import com.kjp.shoppingcart.services.patterns.product_search_strategy.SearchProductByName;
+import com.kjp.shoppingcart.services.patterns.search_product_chain.SearchProductChain;
+import com.kjp.shoppingcart.services.patterns.search_product_chain.SearchProductStrategyEnum;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,24 +22,17 @@ import java.util.UUID;
 @Service
 public class ProductService {
 
-    private IProductRepository productRepository;
-    private EntityManager entityManager;
-
-    private SearchProductByName searchProductByName;
+    private final IProductRepository productRepository;
+    private final SearchProductChain searchProductChain;
 
     @Autowired
-    public ProductService(IProductRepository productRepository, EntityManager entityManager) {
+    public ProductService(IProductRepository productRepository) {
        this.productRepository = productRepository;
-       this.entityManager = entityManager;
-       this.searchProductByName = new SearchProductByName(entityManager);
+       this.searchProductChain = new SearchProductChain(this.productRepository);
     }
 
-    public List<ProductEntity> getAll(Pageable pageable) {
-        return productRepository.findAll();
-    }
-
-    public PaginateProductDTO getByNameP(String value, Pagination pagination, OrderEnum order) {
-       return searchProductByName.search(value, pagination, order);
+    public Page<ProductEntity> getAll(Pageable pageable, SearchProductStrategyEnum strategy, String value) {
+        return this.searchProductChain.search(value, pageable, strategy);
     }
 
     public Page<ProductEntity> getByName(String name, Pageable pageable) {

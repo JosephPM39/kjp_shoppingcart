@@ -1,5 +1,6 @@
 package com.kjp.shoppingcart.advice;
 
+import com.kjp.shoppingcart.exceptions.BadStrategySearchParams;
 import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -43,6 +44,11 @@ public class DataExceptionHandler {
         });
         System.out.println("Errores: " + errors.toString());
         return new ResponseEntity<>(errors.toString(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadStrategySearchParams.class)
+    public ResponseEntity<String> handleBadStrategySearchParams(BadStrategySearchParams ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 }

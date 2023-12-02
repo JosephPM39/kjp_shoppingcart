@@ -22,6 +22,7 @@ public class CategoryEntity extends BaseEntity {
     @Column
     private String description;
 
-    @Column
-    private boolean disabled;
+    @NotBlank(groups = CreateGroup.class)
+    @Column(nullable = false)
+    private boolean disabled = false;
 }

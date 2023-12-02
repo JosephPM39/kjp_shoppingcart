@@ -31,7 +31,7 @@ public class ProductEntity extends BaseEntity {
    @Column
    private String code;
 
-   @ManyToMany
+   @ManyToMany()
    @JoinTable(
       name = "products_categories",
       joinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false),

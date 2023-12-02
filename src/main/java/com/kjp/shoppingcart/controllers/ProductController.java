@@ -1,14 +1,18 @@
 package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.entities.ProductEntity;
+import com.kjp.shoppingcart.exceptions.BadStrategySearchParams;
 import com.kjp.shoppingcart.services.ProductService;
 import com.kjp.shoppingcart.services.patterns.search_product_chain.SearchProductStrategyEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.PathParam;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -23,14 +27,26 @@ public class ProductController {
    }
 
    @GetMapping
-   public List<ProductEntity> getAll(
-         @PathParam("pageSize") int pageSize,
-         @PathParam("pageNumber") int pageNumber,
-         @PathParam("strategy") SearchProductStrategyEnum strategy,
-         @PathParam("strategyValue") String strategyValue
+   public Page<ProductEntity> getAll(
+         @PathParam("pageSize") Optional<Integer> pageSize,
+         @PathParam("pageNumber") Optional<Integer> pageNumber,
+         @PathParam("strategy") Optional<SearchProductStrategyEnum> strategy,
+         @PathParam("strategyValue") Optional<String> strategyValue
    ) {
-      PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-      return ;
+
+      if (isOnlyOneOfBothPresent(strategy, strategyValue)) {
+         String error = "To use search by value, we need two parameters: "
+                 .concat("\"strategy\" and \"searchValue\". ")
+                 .concat("Example: strategy=BY_NAME&searchValue=product1.");
+         throw new BadStrategySearchParams(error);
+      }
+
+      PageRequest pageRequest = PageRequest.of(pageNumber.orElse(0), pageSize.orElse(25));
+      return productService.getAll(pageRequest, strategy.orElse(SearchProductStrategyEnum.NONE), strategyValue.orElse(null));
+   }
+
+   private boolean isOnlyOneOfBothPresent(Optional<SearchProductStrategyEnum> strategy, Optional<String> strategyValue) {
+      return strategy.isPresent() && strategyValue.isEmpty() || (strategy.isEmpty() && strategyValue.isPresent());
    }
 
    @GetMapping("/:id")
@@ -40,7 +56,6 @@ public class ProductController {
 
    @PostMapping
    public void create(@RequestBody ProductEntity product) {
-      productService.create();
    }
 
    @DeleteMapping("/:id")

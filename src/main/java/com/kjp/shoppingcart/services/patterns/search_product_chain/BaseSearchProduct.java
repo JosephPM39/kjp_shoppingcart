@@ -3,15 +3,16 @@ package com.kjp.shoppingcart.services.patterns.search_product_chain;
 import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.exceptions.BadStrategyConfigException;
 import com.kjp.shoppingcart.repositories.IProductRepository;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
-
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 
 @Setter
 public abstract class BaseSearchProduct implements ISearchProduct {
 
     private ISearchProduct nextSearch;
+    @Getter
     private IProductRepository productRepository;
 
     protected BaseSearchProduct(IProductRepository productRepository){
@@ -23,7 +24,7 @@ public abstract class BaseSearchProduct implements ISearchProduct {
         if (SearchProductStrategyEnum.NONE != strategy) {
             throw new BadStrategyConfigException("No chain handler for Search products strategy: ".concat(strategy.name()));
         }
-        return null;
+        return productRepository.findAll(pageable);
     }
 
 }

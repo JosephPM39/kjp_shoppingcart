@@ -5,17 +5,17 @@ import com.kjp.shoppingcart.repositories.IProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public class SearchProductByNameHandler extends BaseSearchProduct {
+public class SearchProductByNameContainsHandler extends BaseSearchProduct {
 
-    protected SearchProductByNameHandler(IProductRepository productRepository) {
+    protected SearchProductByNameContainsHandler(IProductRepository productRepository) {
         super(productRepository);
     }
 
     @Override
     public Page<ProductEntity> search(String value, Pageable pageable, SearchProductStrategyEnum strategy) {
-        if (SearchProductStrategyEnum.BY_NAME != strategy) {
+        if (SearchProductStrategyEnum.BY_NAME_CONTAINS != strategy) {
             return super.search(value, pageable, strategy);
         }
-        return super.getProductRepository().findByName(value, pageable);
+        return super.getProductRepository().findByNameContainsIgnoreCase(value, pageable);
     }
 }

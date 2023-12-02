@@ -3,8 +3,7 @@ package com.kjp.shoppingcart.services.patterns.search_product_chain;
 import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.repositories.IProductRepository;
 import org.springframework.data.domain.Page;
-
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 
 public class SearchProductByCategoryNameHandler extends BaseSearchProduct {
 
@@ -17,7 +16,7 @@ public class SearchProductByCategoryNameHandler extends BaseSearchProduct {
         if (SearchProductStrategyEnum.BY_CATEGORY_NAME != strategy) {
            return super.search(value, pageable, strategy);
         }
-        return null;
+        return super.getProductRepository().findByCategoryName(value, pageable);
     }
 
 }
