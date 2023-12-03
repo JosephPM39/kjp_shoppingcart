@@ -1,18 +1,13 @@
 package com.kjp.shoppingcart.utils;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ObjectUtils {
     public static Set<String> getNullPropertyNames(Object object) {
@@ -29,83 +24,113 @@ public class ObjectUtils {
         return emptyNames;
     }
 
-    public static <T> T copiarPropiedades(Object origen, Object destino, Class<T> claseDestino) {
-        if (origen == null || destino == null || claseDestino == null) {
-            throw new IllegalArgumentException("Los objetos y la clase destino no pueden ser nulos");
+    public static <T> T getInstanceWithNotNullFields(T dataObject, T defaultDataObject, Class<T> targetClass) {
+
+        if (dataObject == null || defaultDataObject == null || targetClass == null) {
+            throw new IllegalArgumentException("Invalid Parameters: dataObject, defaultDataObject and targetClass must not be null");
         }
 
-        Map<String, Object> valores = new HashMap<>();
-        Field[] camposOrigen = origen.getClass().getDeclaredFields();
-        Field[] camposDestino = destino.getClass().getDeclaredFields();
+        Field[] dataObjectFields = dataObject.getClass().getDeclaredFields();
+        Field[] defaultDataObjectFields = defaultDataObject.getClass().getDeclaredFields();
 
-        for (Field campoDestino : camposDestino) {
-            // Ignorar campos estáticos y finales
-            // if (Modifier.isStatic(campoDestino.getModifiers()) || Modifier.isFinal(campoDestino.getModifiers())) {
-                // continue;
-            //}
+        Map<String, Object> data = getMapWithNotNullData(
+            dataObjectFields,
+            defaultDataObjectFields,
+            dataObject,
+            defaultDataObject
+        );
 
-            // Buscar el campo correspondiente en el objeto de origen
-            Field campoOrigen = encontrarCampo(camposOrigen, campoDestino.getName());
-
-            // Almacenar el valor si el campo no es nulo en el objeto de origen
-            if (campoOrigen != null) {
-                campoDestino.setAccessible(true);
-                campoOrigen.setAccessible(true);
-
-                Object valorOrigen = campoOrigen.get(origen);
-                Object valorDestion = campoDestino.get(destino);
-                if (valorOrigen != null) {
-                    valores.put(campoDestino.getName(), valorOrigen);
-                } else {
-                    valores.put(campoDestino.getName(), valorDestion);
-                }
-            }
-        }
-
-        return instanciarObjeto(claseDestino, valores);
+        return createInstanceWithAllArgsConstructor(targetClass, data);
     }
 
-    private static Field encontrarCampo(Field[] campos, String nombreCampo) {
-        for (Field campo : campos) {
-            if (campo.getName().equals(nombreCampo)) {
-                return campo;
+    private static Field findFieldByName(Field[] fields, String name) {
+        for (Field field : fields) {
+            if (field.getName().equals(name)) {
+                return field;
             }
         }
         return null;
     }
 
-    private static <T> T instanciarObjeto(Class<T> clase, Map<String, Object> valores) {
-        Constructor<T>[] constructores = (Constructor<T>[]) clase.getDeclaredConstructors();
+    private static <T> Map<String, Object> getMapWithNotNullData(Field[] fields, Field[] defaultFields, T dataObject, T defaultDataObject) {
+        Map<String, Object> data = new HashMap<>();
 
-        // Buscar un constructor compatible con la lista de parámetros
-        for (Constructor<T> constructor : constructores) {
-            Parameter[] tiposParametros = constructor.getParameters();
-            if (tiposParametros.length == valores.size() && parametrosCoinciden(tiposParametros, valores.keySet())) {
-                constructor.setAccessible(true);
-                Object[] parametersValues = new Object[valores.size()];
-                for (int i = 0; i < parametersValues.length; i++) {
-                    parametersValues[i] = valores.get(tiposParametros[i].getName());
+        try {
+            for (Field defaultField: defaultFields) {
+
+                Field dataField = findFieldByName(fields, defaultField.getName());
+
+                if (dataField == null) {
+                    continue;
                 }
 
-                // Crear la instancia llamando al constructor con los valores
-                try {
-                    return constructor.newInstance(parametersValues);
-                } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage());
+                dataField.setAccessible(true);
+                Object dataFieldValue = dataField.get(dataObject);
+                String dataFieldName = dataField.getName();
+
+                if (dataFieldValue != null) {
+                    data.put(dataFieldName, dataFieldValue);
+                    continue;
                 }
+
+                defaultField.setAccessible(true);
+                Object defaultDataFieldValue = defaultField.get(defaultDataObject);
+                String defaultDataFieldName = defaultField.getName();
+                data.put(defaultDataFieldName, defaultDataFieldValue);
+
             }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e.getMessage());
         }
 
-        throw new IllegalArgumentException("No se encontró un constructor compatible en la clase destino");
+        return data;
     }
 
-    private static boolean parametrosCoinciden(Parameter[] parametros, Set<String> nombres) {
-        if (parametros.length != nombres.size()) {
+    private static <T> T createInstanceWithAllArgsConstructor(Class<T> classObject, Map<String, Object> data) {
+        Constructor<?>[] constructors = classObject.getDeclaredConstructors();
+        Constructor<?> compatibleConstructor = findCompatibleConstructor(constructors, data);
+
+        if (compatibleConstructor == null) {
+            throw new IllegalArgumentException("Compatible constructor not found");
+        }
+
+        Object[] ordenedData = getOrdenedParamsValueByConstructorParamsOrder(compatibleConstructor, data);
+
+        try {
+            compatibleConstructor.setAccessible(true);
+            return classObject.cast(compatibleConstructor.newInstance(ordenedData));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private static Object[] getOrdenedParamsValueByConstructorParamsOrder(Constructor<?> constructor, Map<String, Object> map) {
+        Parameter[] params = constructor.getParameters();
+        Object[] ordenedParamsValues = new Object[params.length];
+
+        for (int i = 0; i < params.length; i++) {
+            ordenedParamsValues[i] = map.get(params[i].getName());
+        }
+
+        return ordenedParamsValues;
+    }
+
+    private static Constructor<?> findCompatibleConstructor(Constructor<?>[] constructors, Map<String, Object> data) {
+        for (Constructor<?> constructor: constructors) {
+            if (paramsEquals(constructor.getParameters(), data.keySet())) {
+                return constructor;
+            }
+        }
+        return null;
+    }
+
+    private static boolean paramsEquals(Parameter[] params, Set<String> paramsNames) {
+        if (params.length != paramsNames.size()) {
             return false;
         }
 
-        for (Parameter parametro : parametros) {
-            if (!nombres.contains(parametro.getName())) {
+        for (Parameter param: params) {
+            if (!paramsNames.contains(param.getName())) {
                 return false;
             }
         }
