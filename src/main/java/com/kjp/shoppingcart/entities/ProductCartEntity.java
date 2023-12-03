@@ -7,30 +7,28 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
 @Setter
-@Entity(name = "orders_products")
-public class OrderProductEntity extends BaseEntity {
+@Entity(name = "products_carts")
+public class ProductCartEntity extends BaseEntity {
 
     @Column(name = "product_id")
     private UUID productId;
 
-    @Column(name = "order_id")
-    private UUID orderId;
+    @Column(name = "cart_id")
+    private UUID cartId;
+
+    @Column
+    private Integer quantity = 1;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
     private ProductEntity product;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
-    private OrderEntity order;
-
-    @Column(name = "sold_price", nullable = false)
-    private BigDecimal soldPrice;
-
+    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = false)
+    private CartEntity cart;
 
 }

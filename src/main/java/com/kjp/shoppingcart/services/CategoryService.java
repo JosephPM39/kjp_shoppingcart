@@ -1,10 +1,12 @@
 package com.kjp.shoppingcart.services;
 
-import com.kjp.shoppingcart.dto.AddProductsToCategoryDTO;
+import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
-import com.kjp.shoppingcart.entities.ProductEntity;
+import com.kjp.shoppingcart.entities.ProductCategoryEntity;
+import com.kjp.shoppingcart.exceptions.ResourceAlreadyExistsException;
 import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import com.kjp.shoppingcart.repositories.ICategoryRepository;
+import com.kjp.shoppingcart.repositories.IProductCategoryRepository;
 import com.kjp.shoppingcart.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,12 @@ import java.util.UUID;
 @Service
 public class CategoryService {
     private final ICategoryRepository categoriesRepository;
+    private final IProductCategoryRepository productCategoryRepository;
 
     @Autowired
-    public CategoryService(ICategoryRepository categoriesRepository) {
+    public CategoryService(ICategoryRepository categoriesRepository, IProductCategoryRepository productCategoryRepository) {
         this.categoriesRepository = categoriesRepository;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     public List<CategoryEntity> getAll() {
@@ -61,16 +65,42 @@ public class CategoryService {
         this.update(id, changes);
     }
 
-    public void addProductsToCategory(UUID id, AddProductsToCategoryDTO productsId) {
-        List<ProductEntity> productEntities = new ArrayList<>();
-        for(UUID productId : productsId.productsId()) {
-            ProductEntity product = new ProductEntity();
-            product.setId(productId);
-            productEntities.add(product);
-        }
+    public void addProductsToCategory(UUID id, ProductsIdListDTO productsId) {
+        List<ProductCategoryEntity> productCategoryEntities = new ArrayList<>();
         CategoryEntity category = this.getById(id);
-        category.getProducts().addAll(productEntities);
-        this.categoriesRepository.save(category);
+
+        for(UUID productId : productsId.productsId()) {
+            ProductCategoryEntity productCategoryEntity = new ProductCategoryEntity();
+
+            if (this.productCategoryRepository.existsByCategoryIdAndProductId(category.getId(), productId)) {
+                throw new ResourceAlreadyExistsException(
+                    "The Category with the ID: "
+                    .concat(id.toString())
+                    .concat(" already has the product with the ID: "
+                    .concat(productId.toString()))
+                );
+            }
+
+            productCategoryEntity.setProductId(productId);
+            productCategoryEntity.setCategoryId(category.getId());
+
+            productCategoryEntities.add(productCategoryEntity);
+        }
+
+        this.productCategoryRepository.saveAll(productCategoryEntities);
+    }
+
+    public void removeProductFromCategory(UUID id, UUID productId) {
+        CategoryEntity category = this.getById(id);
+        Optional<ProductCategoryEntity> productCategoryEntity = this.productCategoryRepository.findFirstByCategoryIdAndProductId(category.getId(), productId);
+        if (productCategoryEntity.isEmpty()) {
+            throw new ResourceNotFoundException(
+                "The Category with the ID: "
+                .concat(id.toString())
+                .concat(" Not has the product with the ID: "
+                .concat(productId.toString()))
+            );
+        }
     }
 
 

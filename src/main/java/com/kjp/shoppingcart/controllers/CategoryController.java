@@ -1,6 +1,6 @@
 package com.kjp.shoppingcart.controllers;
 
-import com.kjp.shoppingcart.dto.AddProductsToCategoryDTO;
+import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.services.CategoryService;
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
@@ -33,8 +33,13 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}/products")
-    public void addProductsToCategory(@PathVariable UUID id, @RequestBody AddProductsToCategoryDTO productsId) {
+    public void addProductsToCategory(@PathVariable UUID id, @RequestBody ProductsIdListDTO productsId) {
         categoriesService.addProductsToCategory(id, productsId);
+    }
+
+    @DeleteMapping("/{id}/products/{productId}")
+    public void removeProductFromCategory(@PathVariable UUID id, @PathVariable UUID productId) {
+        categoriesService.removeProductFromCategory(id, productId);
     }
 
     @PostMapping

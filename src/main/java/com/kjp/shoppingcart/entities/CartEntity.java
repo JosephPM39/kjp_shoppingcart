@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,6 +15,9 @@ public class CartEntity extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity user;
+
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
