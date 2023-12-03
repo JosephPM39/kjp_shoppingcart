@@ -10,7 +10,7 @@ import java.util.Set;
 @Value
 @RequiredArgsConstructor
 @Builder
-public class UserDTO implements Serializable {
+public class CreateUserDTO implements Serializable {
 
 
     private String username;

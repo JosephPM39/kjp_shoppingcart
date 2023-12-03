@@ -1,7 +1,14 @@
 package com.kjp.shoppingcart.services;
 
 import com.kjp.shoppingcart.config.KeycloakConfig;
-import com.kjp.shoppingcart.dto.UserDTO;
+import com.kjp.shoppingcart.dto.CreateUserDTO;
+import com.kjp.shoppingcart.dto.GetUserDTO;
+import com.kjp.shoppingcart.entities.UserEntity;
+import com.kjp.shoppingcart.exceptions.ResourceAlreadyExistsException;
+import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
+import com.kjp.shoppingcart.mappers.UserMapper;
+import com.kjp.shoppingcart.repositories.IUserRepository;
+import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;
@@ -11,32 +18,78 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
 public class UserService implements IUserService {
 
-    @Override
-    public List<UserRepresentation> findAllUsers(){
-        return KeycloakConfig.getRealmResource()
-                .users()
-                .list();
+    IUserRepository userRepository;
+
+    @Autowired
+    public UserService(IUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public List<UserRepresentation> searchUserByUsername(String username) {
-        return KeycloakConfig.getRealmResource()
-                .users()
-                .searchByUsername(username, true);
+    public List<GetUserDTO> findAllUsers(){
+        List<UserRepresentation> users = KeycloakConfig.getRealmResource().users().list();
+        return UserMapper.toGetUserDTO(users);
     }
 
     @Override
-    public String createUser(@NonNull UserDTO userDTO) {
+    public UserEntity findLocalUserByKeycloakId(UUID keycloakId) {
+        Optional<UserEntity> optionalUserEntity = this.userRepository.findFirstByKeycloakIdEquals(keycloakId);
+        if (optionalUserEntity.isPresent()) {
+            return optionalUserEntity.get();
+        }
+        throw new ResourceNotFoundException("User not found with the keycloak id:".concat(keycloakId.toString()));
+    }
+
+    @Override
+    public List<UserEntity> findAllLocalUsers() {
+        return null;
+    }
+
+    @Override
+    public UserRepresentation searchUserByUsername(String username) {
+        List<UserRepresentation> users = KeycloakConfig.getRealmResource().users().searchByUsername(username, true);
+        Optional<UserRepresentation> user = users.stream().filter(userRepresentation -> {
+            return userRepresentation.getUsername().equals(username);
+        }).findFirst();
+        if (user.isEmpty()) {
+            throw new ResourceNotFoundException("User not found with the username: ".concat(username));
+        }
+        return user.get();
+    }
+
+    @Override
+    public UserEntity findUserByKeycloakId(UUID keycloakId) {
+        return null;
+    }
+
+    @Override
+    public UUID getAuthenticatedUserKeycloakId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        return UUID.fromString(userId);
+    }
+
+    public UserRepresentation findUserById(UUID userId) {
+        return KeycloakConfig.getRealmResource().users().get(userId.toString()).toRepresentation();
+    }
+
+    @Override
+    public void createUser(@NonNull CreateUserDTO userDTO) {
 
         int status = 0;
         UsersResource usersResource = KeycloakConfig.getUserResource();
@@ -82,26 +135,32 @@ public class UserService implements IUserService {
 
             realmResource.users().get(userId).roles().realmLevel().add(rolesRepresentation);
 
-            return "User created successfully!!";
+            createLocalUser(userDTO.getUsername());
 
         } else if (status == 409) {
             log.error("User exist already!");
-            return "User exist already!";
+            throw new ResourceAlreadyExistsException("User already exists");
         } else {
             log.error("Error creating user, please contact with the administrator.");
-            return "Error creating user, please contact with the administrator.";
+            throw new InternalServerErrorException("Error crating user, please contact with the administrator.");
         }
     }
 
+    private void createLocalUser(String userName) {
+        UserRepresentation user = searchUserByUsername(userName);
+        UserEntity userEntity = UserMapper.toUserEntity(user, false);
+        this.userRepository.save(userEntity);
+    }
+
     @Override
-    public void deleteUser(String userId){
+    public void deleteUser(UUID userId){
         KeycloakConfig.getUserResource()
-                .get(userId)
+                .get(userId.toString())
                 .remove();
     }
 
     @Override
-    public void updateUser(String userId, @NonNull UserDTO userDTO){
+    public void updateUser(UUID userId, @NonNull CreateUserDTO userDTO){
 
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);
@@ -117,7 +176,7 @@ public class UserService implements IUserService {
         user.setEmailVerified(true);
         user.setCredentials(Collections.singletonList(credentialRepresentation));
 
-        UserResource usersResource = KeycloakConfig.getUserResource().get(userId);
+        UserResource usersResource = KeycloakConfig.getUserResource().get(userId.toString());
         usersResource.update(user);
     }
 }
