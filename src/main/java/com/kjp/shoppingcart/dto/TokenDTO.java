@@ -5,8 +5,8 @@ import lombok.Builder;
 @Builder
 public record TokenDTO(
 String accessToken,
-String expiresIn,
-String refreshExpiresIn,
+Integer expiresIn,
+Integer refreshExpiresIn,
 String refreshToken,
 String tokenType,
 String notBeforePolicy,
