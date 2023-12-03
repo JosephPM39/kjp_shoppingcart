@@ -20,7 +20,7 @@ public class ProductCartEntity extends BaseEntity {
     @Column(name = "cart_id")
     private UUID cartId;
 
-    @Column
+    @Column(nullable = false)
     private Integer quantity = 1;
 
     @ManyToOne
