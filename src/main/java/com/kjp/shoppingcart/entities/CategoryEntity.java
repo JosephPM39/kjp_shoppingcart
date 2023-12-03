@@ -4,10 +4,14 @@ import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +29,8 @@ public class CategoryEntity extends BaseEntity {
     @NotBlank(groups = CreateGroup.class)
     @Column(nullable = false)
     private boolean disabled = false;
+
+    @ManyToMany(mappedBy = "categories")
+    private List<ProductEntity> products;
+
 }

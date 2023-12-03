@@ -1,10 +1,10 @@
 package com.kjp.shoppingcart.controllers;
 
+import com.kjp.shoppingcart.dto.AddProductsToCategoryDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
-import com.kjp.shoppingcart.services.CategoriesService;
+import com.kjp.shoppingcart.services.CategoryService;
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +15,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
-    private final CategoriesService categoriesService;
+    private final CategoryService categoriesService;
 
     @Autowired
-    public CategoryController(CategoriesService categoriesService) {
+    public CategoryController(CategoryService categoriesService) {
         this.categoriesService = categoriesService;
     }
 
@@ -33,8 +33,8 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}/products")
-    public void addProducts(@PathVariable UUID id, @RequestBody Object productsId) {
-
+    public void addProductsToCategory(@PathVariable UUID id, @RequestBody AddProductsToCategoryDTO productsId) {
+        categoriesService.addProductsToCategory(id, productsId);
     }
 
     @PostMapping
@@ -47,9 +47,14 @@ public class CategoryController {
         categoriesService.update(id, category);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/disable")
     public void disable(@PathVariable UUID id) {
+        categoriesService.disable(id);
+    }
 
+    @PostMapping("/{id}/enable")
+    public void enable(@PathVariable UUID id) {
+        categoriesService.enable(id);
     }
 
     @DeleteMapping("/{id}")

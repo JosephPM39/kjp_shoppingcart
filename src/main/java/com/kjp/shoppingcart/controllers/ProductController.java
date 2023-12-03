@@ -49,23 +49,34 @@ public class ProductController {
       return strategy.isPresent() && strategyValue.isEmpty() || (strategy.isEmpty() && strategyValue.isPresent());
    }
 
-   @GetMapping("/:id")
+   @GetMapping("/{id}")
    public ProductEntity getById(@PathVariable UUID id) {
-      return new ProductEntity();
+      return productService.getById(id);
    }
 
    @PostMapping
    public void create(@RequestBody ProductEntity product) {
+      productService.create(product);
    }
 
-   @DeleteMapping("/:id")
+   @DeleteMapping("/{id}")
    public void remove(@PathVariable UUID id) {
-
+      productService.remove(id);
    }
 
-   @PatchMapping("/:id")
+   @PatchMapping("/{id}")
    public void update(@PathVariable UUID id, @RequestBody ProductEntity product) {
+      productService.update(id, product);
+   }
 
+   @PostMapping("/{id}/disable")
+   public void disable(@PathVariable UUID id) {
+      productService.disable(id);
+   }
+
+   @PostMapping("/{id}/enable")
+   public void enable(@PathVariable UUID id) {
+      productService.enable(id);
    }
 
 }
