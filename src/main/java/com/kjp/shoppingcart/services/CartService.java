@@ -1,74 +1,101 @@
 package com.kjp.shoppingcart.services;
 
+import com.kjp.shoppingcart.dto.ProductCartDTO;
 import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CartEntity;
 import com.kjp.shoppingcart.entities.CartStatusEnum;
 import com.kjp.shoppingcart.entities.ProductCartEntity;
+import com.kjp.shoppingcart.exceptions.BadProductCartQuantityException;
 import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
-import com.kjp.shoppingcart.repositories.ICartRepository;
-import com.kjp.shoppingcart.repositories.IOrderProductRepository;
-import com.kjp.shoppingcart.repositories.IOrderRepository;
-import com.kjp.shoppingcart.repositories.IProductCartRepository;
+import com.kjp.shoppingcart.mappers.ProductCartMapper;
+import com.kjp.shoppingcart.repositories.*;
+import com.kjp.shoppingcart.utils.ProductServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 @Service
-public class CartService {
+public class CartService implements ICartService {
 
     ICartRepository cartRepository;
     IOrderRepository orderRepository;
     IOrderProductRepository orderProductRepository;
     IProductCartRepository productCartRepository;
+    IProductRepository productRepository;
 
     @Autowired
     public CartService(
-        ICartRepository cartRepository,
-        IOrderRepository orderRepository,
-        IOrderProductRepository orderProductRepository,
-        IProductCartRepository productCartRepository
-       ) {
+            ICartRepository cartRepository,
+            IOrderRepository orderRepository,
+            IOrderProductRepository orderProductRepository,
+            IProductCartRepository productCartRepository,
+            IProductRepository productRepository
+    ) {
         this.cartRepository = cartRepository;
         this.orderRepository = orderRepository;
         this.orderProductRepository = orderProductRepository;
         this.productCartRepository = productCartRepository;
+        this.productRepository = productRepository;
     }
 
+    @Override
     public void addProductsToUserCart(UUID userId, ProductsIdListDTO productsIdListDTO) {
         CartEntity userCart = getOrCreateUserCart(userId);
         Map<UUID, Integer> compactedProductIdQuantities = getCompactedProductsQuantities(productsIdListDTO.productsId());
+
+        ProductServiceUtils.throwIfSomeProductNotFound(compactedProductIdQuantities.keySet().stream().toList(), this.productRepository);
+
         List<ProductCartEntity> productCartEntities = getProductCartList(compactedProductIdQuantities, userCart.getUserId());
         List<ProductCartEntity> finalProductCartEntities = getProductCartListWithExistingSum(productCartEntities);
 
         this.productCartRepository.saveAll(finalProductCartEntities);
     }
 
-
-    public void removeProductFromCart(UUID userId, UUID productId) {
+    @Override
+    public void removeAllOfProductFromCart(UUID userId, UUID productId) {
         CartEntity userCart = getUserCart(userId);
         this.productCartRepository.deleteByCartIdAndProductId(userCart.getId(), productId);
     }
 
-    public void getAllCartProducts(UUID userId) {
+    @Override
+    public List<ProductCartDTO> getAllCartProducts(UUID userId) {
         CartEntity userCart = getUserCart(userId);
-
+        List<ProductCartEntity> productCartEntities = this.productCartRepository.findAllProductsByCartId(userCart.getId());
+        return ProductCartMapper.getProductCartDTOList(productCartEntities);
     }
 
-    public void makeOrder() {
+    @Override
+    public void removeProductFromCart(UUID userId, UUID productId, Integer quantity) {
+        CartEntity userCart = getUserCart(userId);
+        Optional<ProductCartEntity> productCartEntity = this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
+        if (productCartEntity.isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "The actual user don't has the product with the Id: "
+                            .concat(productId.toString())
+                            .concat(" in his cart")
+            );
+        }
+        ProductCartEntity prod = productCartEntity.get();
+        if (quantity > prod.getQuantity()) {
+            throw new BadProductCartQuantityException(
+                    "The cart only has "
+                            .concat(prod.getQuantity().toString())
+                            .concat(" products, cannot remove ")
+                            .concat(quantity.toString())
+                            .concat(" products")
+            );
+        }
+
+        if (quantity.equals(prod.getQuantity())) {
+            this.productCartRepository.deleteByCartIdAndProductId(userCart.getId(), productId);
+            return;
+        }
+
+        prod.setQuantity(prod.getQuantity() - quantity);
+        this.productCartRepository.save(prod);
     }
 
-    public void abortOrder() {
-    }
-
-    public void makeDoneOrder() {
-    }
-
-    public void getOrders() {
-    }
     private List<ProductCartEntity> getProductCartList(Map<UUID, Integer> compactedProductIdQuantities, UUID userCartId) {
         List<ProductCartEntity> productCartEntities = new ArrayList<>();
         for (Map.Entry<UUID, Integer> entry : compactedProductIdQuantities.entrySet()) {
@@ -85,7 +112,7 @@ public class CartService {
     private List<ProductCartEntity> getProductCartListWithExistingSum(List<ProductCartEntity> list) {
         List<ProductCartEntity> finalProductCartEntities = new ArrayList<>();
 
-        for (ProductCartEntity productCartEntity: list) {
+        for (ProductCartEntity productCartEntity : list) {
             Optional<ProductCartEntity> existingEntity = this.productCartRepository.findFirstByCartIdAndProductId(
                     productCartEntity.getCartId(),
                     productCartEntity.getProductId()
@@ -104,8 +131,13 @@ public class CartService {
 
     private CartEntity getOrCreateUserCart(UUID userId) {
         Optional<CartEntity> preExistUserCart = this.cartRepository.findFirstByUserId(userId);
-        CartEntity userCart;
-        userCart = preExistUserCart.orElseGet(CartEntity::new);
+        if (preExistUserCart.isPresent()) {
+            CartEntity userCart = preExistUserCart.get();
+            userCart.setStatus(CartStatusEnum.PENDING);
+            this.cartRepository.save(userCart);
+            return userCart;
+        }
+        CartEntity userCart = new CartEntity();
         userCart.setStatus(CartStatusEnum.PENDING);
         userCart.setUserId(userId);
         this.cartRepository.save(userCart);
@@ -132,11 +164,9 @@ public class CartService {
     private CartEntity getUserCart(UUID userId) {
         Optional<CartEntity> userCart = this.cartRepository.findFirstByUserId(userId);
         if (userCart.isEmpty()) {
-           throw new ResourceNotFoundException("The actual user don't has a product cart");
+            throw new ResourceNotFoundException("The actual user don't has a product cart");
         }
         return userCart.get();
     }
-
-
-
 }
+

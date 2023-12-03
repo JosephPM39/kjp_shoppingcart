@@ -19,19 +19,23 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class UserService {
+public class UserService implements IUserService {
+
+    @Override
     public List<UserRepresentation> findAllUsers(){
         return KeycloakConfig.getRealmResource()
                 .users()
                 .list();
     }
 
+    @Override
     public List<UserRepresentation> searchUserByUsername(String username) {
         return KeycloakConfig.getRealmResource()
                 .users()
                 .searchByUsername(username, true);
     }
 
+    @Override
     public String createUser(@NonNull UserDTO userDTO) {
 
         int status = 0;
@@ -89,12 +93,14 @@ public class UserService {
         }
     }
 
+    @Override
     public void deleteUser(String userId){
         KeycloakConfig.getUserResource()
                 .get(userId)
                 .remove();
     }
 
+    @Override
     public void updateUser(String userId, @NonNull UserDTO userDTO){
 
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();

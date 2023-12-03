@@ -1,7 +1,6 @@
 package com.kjp.shoppingcart.advice;
 
-import com.kjp.shoppingcart.exceptions.BadStrategySearchParams;
-import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
+import com.kjp.shoppingcart.exceptions.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -49,6 +48,21 @@ public class DataExceptionHandler {
     @ExceptionHandler(BadStrategySearchParams.class)
     public ResponseEntity<String> handleBadStrategySearchParams(BadStrategySearchParams ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadProductCartQuantityException.class)
+    public ResponseEntity<String> handleBadProductCartQuantityException(BadProductCartQuantityException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<String> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BadStrategyConfigException.class)
+    public ResponseEntity<String> handleBadStrategyConfig(BadStrategyConfigException ex) {
+        return new ResponseEntity<>("Server could not handle search strategy request", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

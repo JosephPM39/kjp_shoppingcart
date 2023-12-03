@@ -13,7 +13,7 @@ import java.util.UUID;
 public class CartEntity extends BaseEntity {
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private UserEntity user;
 
     @Column(name = "user_id")

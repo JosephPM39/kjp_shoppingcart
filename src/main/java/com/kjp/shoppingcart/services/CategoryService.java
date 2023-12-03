@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CategoryService {
+public class CategoryService implements ICategoryService {
     private final ICategoryRepository categoriesRepository;
     private final IProductCategoryRepository productCategoryRepository;
 
@@ -31,6 +31,7 @@ public class CategoryService {
         return categoriesRepository.findAll();
     }
 
+    @Override
     public CategoryEntity getById(UUID id) {
         Optional<CategoryEntity> category = categoriesRepository.findById(id);
         if (category.isEmpty()) {
@@ -39,32 +40,33 @@ public class CategoryService {
         return category.get();
     }
 
+    @Override
     public void create(CategoryEntity category) {
         categoriesRepository.save(category);
     }
 
-    public void remove(UUID id) {
-        categoriesRepository.deleteById(id);
-    }
-
+    @Override
     public void update(UUID id, CategoryEntity category) {
         CategoryEntity oldCategory = this.getById(id);
         CategoryEntity categoryWithChanges = ObjectUtils.getInstanceWithNotNullFields(category, oldCategory, CategoryEntity.class);
         categoriesRepository.save(categoryWithChanges);
     }
 
+    @Override
     public void disable(UUID id) {
         CategoryEntity changes = new CategoryEntity();
         changes.setDisabled(true);
         this.update(id, changes);
     }
 
+    @Override
     public void enable(UUID id) {
         CategoryEntity changes = new CategoryEntity();
         changes.setDisabled(false);
         this.update(id, changes);
     }
 
+    @Override
     public void addProductsToCategory(UUID id, ProductsIdListDTO productsId) {
         List<ProductCategoryEntity> productCategoryEntities = new ArrayList<>();
         CategoryEntity category = this.getById(id);
@@ -90,6 +92,7 @@ public class CategoryService {
         this.productCategoryRepository.saveAll(productCategoryEntities);
     }
 
+    @Override
     public void removeProductFromCategory(UUID id, UUID productId) {
         CategoryEntity category = this.getById(id);
         Optional<ProductCategoryEntity> productCategoryEntity = this.productCategoryRepository.findFirstByCategoryIdAndProductId(category.getId(), productId);
@@ -102,6 +105,5 @@ public class CategoryService {
             );
         }
     }
-
 
 }

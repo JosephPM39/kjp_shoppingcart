@@ -59,11 +59,6 @@ public class ProductController {
       productService.create(product);
    }
 
-   @DeleteMapping("/{id}")
-   public void remove(@PathVariable UUID id) {
-      productService.remove(id);
-   }
-
    @PatchMapping("/{id}")
    public void update(@PathVariable UUID id, @RequestBody ProductEntity product) {
       productService.update(id, product);

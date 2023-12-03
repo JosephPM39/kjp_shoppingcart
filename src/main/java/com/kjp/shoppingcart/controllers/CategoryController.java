@@ -62,8 +62,4 @@ public class CategoryController {
         categoriesService.enable(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void remove(@PathVariable UUID id) {
-        categoriesService.remove(id);
-    }
 }

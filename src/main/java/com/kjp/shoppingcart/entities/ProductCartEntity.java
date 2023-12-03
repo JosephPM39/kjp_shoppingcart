@@ -24,11 +24,11 @@ public class ProductCartEntity extends BaseEntity {
     private Integer quantity = 1;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private ProductEntity product;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private CartEntity cart;
 
 }

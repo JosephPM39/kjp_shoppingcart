@@ -21,11 +21,11 @@ public class ProductCategoryEntity extends BaseEntity {
     private UUID categoryId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private ProductEntity product;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private CategoryEntity category;
 
 }

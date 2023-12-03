@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProductService {
+public class ProductService implements IProductService {
 
     private final IProductRepository productRepository;
     private final SearchProductChain searchProductChain;
@@ -26,18 +26,12 @@ public class ProductService {
        this.searchProductChain = new SearchProductChain(this.productRepository);
     }
 
+    @Override
     public Page<ProductEntity> getAll(Pageable pageable, SearchProductStrategyEnum strategy, String value) {
         return this.searchProductChain.search(value, pageable, strategy);
     }
 
-    public Page<ProductEntity> getByName(String name, Pageable pageable) {
-        return productRepository.findByName(name, pageable);
-    }
-
-    public Page<ProductEntity> getByCategoryName(String name, Pageable pageable) {
-        return productRepository.findByCategoryName(name, pageable);
-    }
-
+    @Override
     public ProductEntity getById(UUID id) {
         Optional<ProductEntity> product = productRepository.findById(id);
         if (product.isEmpty()) {
@@ -46,25 +40,26 @@ public class ProductService {
         return product.get();
     }
 
+    @Override
     public void disable(UUID id) {
         ProductEntity changes = new ProductEntity();
         changes.setDisabled(true);
         this.update(id, changes);
     }
 
+    @Override
     public void enable(UUID id) {
         ProductEntity changes = new ProductEntity();
         changes.setDisabled(false);
         this.update(id, changes);
     }
 
+    @Override
     public void create(ProductEntity product) {
         productRepository.save(product);
     }
-    public void remove(UUID id) {
-        productRepository.deleteById(id);
-    }
 
+    @Override
     public void update(UUID id, ProductEntity changes) {
         ProductEntity oldProduct = this.getById(id);
         ProductEntity productWithChanges = ObjectUtils.getInstanceWithNotNullFields(changes, oldProduct, ProductEntity.class);

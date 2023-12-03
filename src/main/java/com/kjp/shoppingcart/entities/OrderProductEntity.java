@@ -22,11 +22,11 @@ public class OrderProductEntity extends BaseEntity {
     private UUID orderId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private ProductEntity product;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private OrderEntity order;
 
     @Column(name = "sold_price", nullable = false)
