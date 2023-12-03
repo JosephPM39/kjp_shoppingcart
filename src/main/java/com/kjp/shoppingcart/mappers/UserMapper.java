@@ -1,6 +1,8 @@
 package com.kjp.shoppingcart.mappers;
 
 import com.kjp.shoppingcart.dto.GetUserDTO;
+import com.kjp.shoppingcart.dto.UpdateOrCreateUserDTO;
+import com.kjp.shoppingcart.dto.UserWithDefaultRoleDTO;
 import com.kjp.shoppingcart.entities.UserEntity;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -58,6 +60,25 @@ public class UserMapper {
         user.setFirstName(userRepresentation.getFirstName());
         user.setEmail(userRepresentation.getEmail());
         return user;
+    }
+
+    public static UserWithDefaultRoleDTO toUserWithDefaultRoleDTO(UpdateOrCreateUserDTO updateOrCreateUserDTO){
+        return UserWithDefaultRoleDTO.builder()
+                .email(updateOrCreateUserDTO.email())
+                .firstName(updateOrCreateUserDTO.firstName())
+                .lastName(updateOrCreateUserDTO.lastName())
+                .password(updateOrCreateUserDTO.password())
+                .username(updateOrCreateUserDTO.username())
+                .build();
+    }
+
+    public static UserEntity toUserEntity(UpdateOrCreateUserDTO updateOrCreateUserDTO) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setEmail(updateOrCreateUserDTO.email());
+        userEntity.setFirstName(updateOrCreateUserDTO.firstName());
+        userEntity.setLastName(updateOrCreateUserDTO.lastName());
+        userEntity.setUsername(updateOrCreateUserDTO.username());
+        return userEntity;
     }
 
 }

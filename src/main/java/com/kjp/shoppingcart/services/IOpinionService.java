@@ -18,4 +18,5 @@ public interface IOpinionService {
     public List<ReviewDTO> getAllReviewsByUser(UUID userId);
     public ReviewDTO getProductReviewByUser(UUID userId, UUID productId);
     public List<ReviewEntity> getAllReviews();
+    public List<ReviewEntity> getAllReviewForTheProduct(UUID productId);
 }

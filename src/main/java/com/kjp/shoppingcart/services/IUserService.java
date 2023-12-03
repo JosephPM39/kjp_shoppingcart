@@ -1,6 +1,7 @@
 package com.kjp.shoppingcart.services;
 
-import com.kjp.shoppingcart.dto.CreateUserDTO;
+import com.kjp.shoppingcart.dto.UpdateOrCreateUserDTO;
+import com.kjp.shoppingcart.dto.UserWithDefaultRoleDTO;
 import com.kjp.shoppingcart.dto.GetUserDTO;
 import com.kjp.shoppingcart.entities.UserEntity;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -15,7 +16,12 @@ public interface IUserService {
     public UserRepresentation searchUserByUsername(String username);
     public UserEntity findUserByKeycloakId(UUID keycloakId);
     public UUID getAuthenticatedUserKeycloakId();
-    public void createUser(CreateUserDTO userDTO);
-    public void deleteUser(UUID userId);
-    public void updateUser(UUID userId, CreateUserDTO userDTO);
+    public UUID getAuthenticatedLocalUserId();
+    public UserEntity searchLocalUserByUsername(String username);
+    public void createUser(UpdateOrCreateUserDTO userDTO);
+    public void deleteUser(UUID keycloakId);
+    public void banUser(String username);
+    public void quitBanUser(String username);
+    public void updateUser(UUID userId, UpdateOrCreateUserDTO userDTO);
+    public void addAdminRoleToUser(String username);
 }

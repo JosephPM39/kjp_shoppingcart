@@ -103,6 +103,11 @@ public class OpinionService implements IOpinionService {
     }
 
     @Override
+    public List<ReviewEntity> getAllReviewForTheProduct(UUID productId) {
+        return this.reviewRepository.findAllByProductIdEquals(productId);
+    }
+
+    @Override
     public List<ReviewDTO> getAllReviewsByUser(UUID userId) {
         List<ReviewEntity> reviewEntities = this.reviewRepository.findAllByUserIdEquals(userId);
         return ReviewMapper.getReviewDTOList(reviewEntities);

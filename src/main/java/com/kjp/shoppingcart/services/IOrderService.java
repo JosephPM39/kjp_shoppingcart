@@ -9,8 +9,10 @@ import java.util.UUID;
 public interface IOrderService {
     public void makeOrderFromUserCart(UUID userId);
     public void abortOrder(UUID orderId);
+    public void abortOrder(UUID userId, UUID orderId);
     public void makeDoneOrder(UUID orderId);
     public List<OrderEntity> getOrders();
     public List<OrderEntity> getUserOrders(UUID userId);
     public List<OrderProductEntity> getOrderProducts(UUID orderId);
+    public List<OrderProductEntity> getUserOrderProducts(UUID userId, UUID orderId);
 }

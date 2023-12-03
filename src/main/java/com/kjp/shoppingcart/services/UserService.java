@@ -1,13 +1,15 @@
 package com.kjp.shoppingcart.services;
 
 import com.kjp.shoppingcart.config.KeycloakConfig;
-import com.kjp.shoppingcart.dto.CreateUserDTO;
+import com.kjp.shoppingcart.dto.UserWithDefaultRoleDTO;
 import com.kjp.shoppingcart.dto.GetUserDTO;
+import com.kjp.shoppingcart.dto.UpdateOrCreateUserDTO;
 import com.kjp.shoppingcart.entities.UserEntity;
 import com.kjp.shoppingcart.exceptions.ResourceAlreadyExistsException;
 import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import com.kjp.shoppingcart.mappers.UserMapper;
 import com.kjp.shoppingcart.repositories.IUserRepository;
+import com.kjp.shoppingcart.utils.ObjectUtils;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +59,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserEntity> findAllLocalUsers() {
-        return null;
+       return this.userRepository.findAll();
     }
 
     @Override
@@ -84,21 +86,38 @@ public class UserService implements IUserService {
         return UUID.fromString(userId);
     }
 
+    @Override
+    public UUID getAuthenticatedLocalUserId() {
+        UserEntity user = findUserByKeycloakId(getAuthenticatedUserKeycloakId());
+        return user.getId();
+    }
+
+    @Override
+    public UserEntity searchLocalUserByUsername(String username) {
+        Optional<UserEntity> user = this.userRepository.findFirstByUsernameEquals(username);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        throw new ResourceNotFoundException("No user exists with the username: ".concat(username));
+    }
+
     public UserRepresentation findUserById(UUID userId) {
         return KeycloakConfig.getRealmResource().users().get(userId.toString()).toRepresentation();
     }
 
     @Override
-    public void createUser(@NonNull CreateUserDTO userDTO) {
+    public void createUser(@NonNull UpdateOrCreateUserDTO dto) {
+
+        UserWithDefaultRoleDTO userDTO = UserMapper.toUserWithDefaultRoleDTO(dto);
 
         int status = 0;
         UsersResource usersResource = KeycloakConfig.getUserResource();
 
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName(userDTO.getFirstName());
-        userRepresentation.setLastName(userDTO.getLastName());
-        userRepresentation.setEmail(userDTO.getEmail());
-        userRepresentation.setUsername(userDTO.getUsername());
+        userRepresentation.setFirstName(userDTO.firstName());
+        userRepresentation.setLastName(userDTO.lastName());
+        userRepresentation.setEmail(userDTO.email());
+        userRepresentation.setUsername(userDTO.username());
         userRepresentation.setEnabled(true);
         userRepresentation.setEmailVerified(true);
 
@@ -113,7 +132,7 @@ public class UserService implements IUserService {
             CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
             credentialRepresentation.setTemporary(false);
             credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
-            credentialRepresentation.setValue(userDTO.getPassword());
+            credentialRepresentation.setValue(userDTO.password());
 
             usersResource.get(userId).resetPassword(credentialRepresentation);
 
@@ -121,13 +140,13 @@ public class UserService implements IUserService {
 
             List<RoleRepresentation> rolesRepresentation = null;
 
-            if (userDTO.getRoles() == null || userDTO.getRoles().isEmpty()) {
+            if (userDTO.roles() == null || userDTO.roles().isEmpty()) {
                 rolesRepresentation = List.of(realmResource.roles().get("user").toRepresentation());
             } else {
                 rolesRepresentation = realmResource.roles()
                         .list()
                         .stream()
-                        .filter(role -> userDTO.getRoles()
+                        .filter(role -> userDTO.roles()
                                 .stream()
                                 .anyMatch(roleName -> roleName.equalsIgnoreCase(role.getName())))
                         .toList();
@@ -135,7 +154,7 @@ public class UserService implements IUserService {
 
             realmResource.users().get(userId).roles().realmLevel().add(rolesRepresentation);
 
-            createLocalUser(userDTO.getUsername());
+            createLocalUser(userDTO.username());
 
         } else if (status == 409) {
             log.error("User exist already!");
@@ -153,30 +172,70 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void deleteUser(UUID userId){
+    public void deleteUser(UUID keycloakId){
         KeycloakConfig.getUserResource()
-                .get(userId.toString())
+                .get(keycloakId.toString())
                 .remove();
+        deleteLocalUser(keycloakId);
+    }
+
+    private void deleteLocalUser(UUID userKeycloakId) {
+        this.userRepository.deleteByKeycloakIdEquals(userKeycloakId);
     }
 
     @Override
-    public void updateUser(UUID userId, @NonNull CreateUserDTO userDTO){
+    public void banUser(String username) {
+        UserEntity user = searchLocalUserByUsername(username);
+        user.setBanned(true);
+        this.userRepository.save(user);
+    }
+
+    @Override
+    public void quitBanUser(String username) {
+        UserEntity user = searchLocalUserByUsername(username);
+        user.setBanned(false);
+        this.userRepository.save(user);
+    }
+
+    @Override
+    public void updateUser(UUID userKeycloakId, @NonNull UpdateOrCreateUserDTO userDTO){
 
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);
         credentialRepresentation.setType(OAuth2Constants.PASSWORD);
-        credentialRepresentation.setValue(userDTO.getPassword());
+        credentialRepresentation.setValue(userDTO.password());
 
         UserRepresentation user = new UserRepresentation();
-        user.setUsername(userDTO.getUsername());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail());
+        user.setUsername(userDTO.username());
+        user.setFirstName(userDTO.firstName());
+        user.setLastName(userDTO.lastName());
+        user.setEmail(userDTO.email());
         user.setEnabled(true);
         user.setEmailVerified(true);
         user.setCredentials(Collections.singletonList(credentialRepresentation));
 
-        UserResource usersResource = KeycloakConfig.getUserResource().get(userId.toString());
+        UserResource usersResource = KeycloakConfig.getUserResource().get(userKeycloakId.toString());
         usersResource.update(user);
+
+        updateLocalUser(userKeycloakId, userDTO);
+    }
+
+    private void updateLocalUser(UUID userKeycloakId, UpdateOrCreateUserDTO userDTO) {
+        Optional<UserEntity> optionalUserEntity = this.userRepository.findFirstByKeycloakIdEquals(userKeycloakId);
+        if (optionalUserEntity.isEmpty()) {
+           throw new ResourceNotFoundException("The local user not found with the keycloakId: ".concat(userKeycloakId.toString()));
+        }
+        UserEntity changes = UserMapper.toUserEntity(userDTO);
+        UserEntity oldUser = optionalUserEntity.get();
+        UserEntity newUser = ObjectUtils.getInstanceWithNotNullFields(changes, oldUser, UserEntity.class);
+        this.userRepository.save(newUser);
+    }
+
+    @Override
+    public void addAdminRoleToUser(String username) {
+        RealmResource realmResource = KeycloakConfig.getRealmResource();
+        UserRepresentation user = searchUserByUsername(username);
+        List<RoleRepresentation> role = List.of(realmResource.roles().get("admin").toRepresentation());
+        realmResource.users().get(user.getId()).roles().realmLevel().add(role);
     }
 }

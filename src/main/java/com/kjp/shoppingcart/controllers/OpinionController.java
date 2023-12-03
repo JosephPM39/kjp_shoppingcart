@@ -1,0 +1,92 @@
+package com.kjp.shoppingcart.controllers;
+
+import com.kjp.shoppingcart.dto.ReviewDTO;
+import com.kjp.shoppingcart.dto.VotesDTO;
+import com.kjp.shoppingcart.entities.ReviewEntity;
+import com.kjp.shoppingcart.services.IOpinionService;
+import com.kjp.shoppingcart.services.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/opinions")
+public class OpinionController {
+
+    IOpinionService opinionService;
+    IUserService userService;
+
+    @Autowired
+    public OpinionController(IOpinionService opinionService, IUserService userService) {
+        this.opinionService = opinionService;
+        this.userService = userService;
+    }
+
+    @PostMapping("/product-vote/{productId}/like")
+    public void voteLikeProduct(@PathVariable("productId") UUID productId) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        this.opinionService.voteLikeProduct(userId, productId);
+    }
+
+
+    @PostMapping("/product-vote/{productId}/dislike")
+    public void voteDislikeProduct(@PathVariable("productId") UUID productId) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        this.opinionService.voteDislikeProduct(userId, productId);
+    }
+
+    @DeleteMapping("/product-vote/{productId}")
+    public void removeProductVote(@PathVariable("productId") UUID productId) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        this.opinionService.removeProductVote(userId, productId);
+    }
+
+    @GetMapping("/product-vote/{productId}")
+    public VotesDTO getProductVotesCount(@PathVariable("productId") UUID productId) {
+        return this.opinionService.getProductVotesCount(productId);
+    }
+
+    @GetMapping("/all-product-review/{productId}")
+    public List<ReviewEntity> getAllReviewsForTheProduct(@PathVariable("productId") UUID productId) {
+        return this.opinionService.getAllReviewForTheProduct(productId);
+    }
+
+    @GetMapping("/all-product-review")
+    public List<ReviewEntity> getAllReviews() {
+        return this.opinionService.getAllReviews();
+    }
+
+    @GetMapping("/product-review/{productId}")
+    public ReviewDTO getProductReviewByUser(@PathVariable("productId") UUID productId) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        return this.opinionService.getProductReviewByUser(userId, productId);
+    }
+
+    @GetMapping("/product-review")
+    public List<ReviewDTO> getAllReviewsByUser() {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        return this.opinionService.getAllReviewsByUser(userId);
+    }
+
+    @PostMapping("/product-review")
+    public void createReview(@RequestBody ReviewDTO reviewDTO) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        this.opinionService.createReview(userId, reviewDTO);
+    }
+
+    @PatchMapping("/product-review")
+    public void updateReview(@RequestBody ReviewDTO reviewDTO) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        this.opinionService.updateReview(userId, reviewDTO);
+    }
+
+    @DeleteMapping("/product-review/{productId}")
+    public void removeReview(@PathVariable("productId") UUID productId) {
+        UUID userId = this.userService.getAuthenticatedLocalUserId();
+        this.opinionService.removeReview(userId, productId);
+    }
+
+}
+

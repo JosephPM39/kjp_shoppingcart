@@ -15,4 +15,6 @@ public interface IReviewRepository extends IBaseRepository<ReviewEntity, UUID> {
     public void deleteByUserIdEqualsAndProductIdEquals(UUID userId, UUID productId);
 
     public List<ReviewEntity> findAllByUserIdEquals(UUID userId);
+
+    public List<ReviewEntity> findAllByProductIdEquals(UUID productId);
 }

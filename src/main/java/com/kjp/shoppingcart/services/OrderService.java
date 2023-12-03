@@ -93,6 +93,21 @@ public class OrderService implements IOrderService {
     }
 
     @Override
+    public void abortOrder(UUID userId, UUID orderId) {
+        OrderEntity order = getUserOrder(userId, orderId);
+        order.setStatus(OrderStatusEnum.ABORTED);
+        this.orderRepository.save(order);
+    }
+
+    private OrderEntity getUserOrder(UUID userId, UUID orderId) {
+        Optional<OrderEntity> order = this.orderRepository.findByUserIdEqualsAndIdEquals(userId, orderId);
+        if (order.isPresent()) {
+            return order.get();
+        }
+        throw new ResourceNotFoundException("The actual user don't has a order with the Id: ".concat(orderId.toString()));
+    }
+
+    @Override
     public void makeDoneOrder(UUID orderId) {
         OrderEntity changes = new OrderEntity();
         changes.setStatus(OrderStatusEnum.COMPLETED);
@@ -112,5 +127,11 @@ public class OrderService implements IOrderService {
     @Override
     public List<OrderProductEntity> getOrderProducts(UUID orderId) {
         return orderProductRepository.findAllByOrderIdEquals(orderId);
+    }
+
+    @Override
+    public List<OrderProductEntity> getUserOrderProducts(UUID userId, UUID orderId) {
+        OrderEntity userOrder = getUserOrder(userId, orderId);
+        return orderProductRepository.findAllByOrderIdEquals(userOrder.getId());
     }
 }

@@ -8,4 +8,8 @@ import java.util.UUID;
 
 public interface IUserRepository extends IBaseRepository<UserEntity, UUID> {
     public Optional<UserEntity> findFirstByKeycloakIdEquals(UUID keycloakId);
+
+    public Optional<UserEntity> findFirstByUsernameEquals(String username);
+
+    public void deleteByKeycloakIdEquals(UUID keycloakId);
 }
