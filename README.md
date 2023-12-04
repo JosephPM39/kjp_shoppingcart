@@ -1,4 +1,4 @@
-# Shopping Cart with Spring Boot
+# Shopping Cart API with Spring Boot
 
 ## Datos del estudiante:
 * Estudiante: José Josias Padilla Martínez
@@ -12,14 +12,14 @@ puedes usarlo como un devcontainer en VSCode e Intellij IDEA Ultimate.
 **Pasos**
 * Descargar el repo
 * Iniciar las dependencias con docker compose up -d
-* Crea la siguiente red global con "docker network create --driver=bridge global" (Solo para dockerizar la api, usar el Dockerfile)
+* Crea la siguiente red global con "docker network create --driver=bridge global" (Solo para dockerizar la api, usando el Dockerfile)
 * Abre en tu navegador keycloak web en: http://localhost:8081/
-* Importa en keycloak el siguiente realm: [https://raw.githubusercontent.com/JosephPM39/kjp_shoppingcart/master/storage/keycloak/realm-export%20spring-boot-dev.json]
+* Importa en keycloak el siguiente realm: [https://raw.githubusercontent.com/JosephPM39/kjp_shoppingcart/master/storage/keycloak/realm-export%20spring-boot-dev.json](real-export spring-boot-dev.json)
 * Puedes configurar un par de usuarios, y asignales los roles "admin_client" y "user_client"
 * Genera el client-secret en keycloak y pegalo en las application.properties en "app.auth-client.client-secret=YOUR_SECRET" y  "app.auth-client.client-secret=YOUR_SECRET"
 * Configura las propiedades en (application.properties) "app.auth-client.user-console=YOUR_USER" y "app.auth-client.password-console=YOUR_PASSWORD"
   para hacer uso de la consola de keycloak
-* Descarga la siguiente colección de postman para que puedas probar la api: [https://www.postman.com/maintenance-architect-42550734/workspace/josephpm39-public-workspace/collection/18993824-97066f9e-ca9c-4637-93d5-098c811510e7]
+* Descarga la siguiente colección de postman para que puedas probar la api: [https://www.postman.com/maintenance-architect-42550734/workspace/josephpm39-public-workspace/collection/18993824-97066f9e-ca9c-4637-93d5-098c811510e7](Postman API Collection)
 
 Consideraciones:
 * En caso que al abrir el devcontainer ya sea con vscode o Intellij, el archivo pom.xml no reconoce
