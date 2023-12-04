@@ -5,17 +5,28 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class KeycloakConfig {
-  private static final String SERVER_URL = "http://keycloak:8080";
-  private static final String REALM_NAME = "spring-boot-dev";
-  private static final String REALM_MASTER = "master";
-  private static final String ADMIN_CLI = "admin-cli";
-  private static final String USER_CONSOLE = "admin";
-  private static final String PASSWORD_CONSOLE = "admin";
-  private static final String CLIENT_SECRET = "f1SoMgKR8zZonJCgGDpmd4oKQCHuY4Ub";
 
-  public static RealmResource getRealmResource() {
+  @Value(value = "${app.auth-client.server-url}")
+  private String SERVER_URL;
+  @Value(value = "${app.auth-client.realm-name}")
+  private String REALM_NAME;
+  @Value(value = "${app.auth-client.realm-master}")
+  private String REALM_MASTER;
+  @Value(value = "${app.auth-client.admin-cli}")
+  private String ADMIN_CLI;
+  @Value(value = "${app.auth-client.user-console}")
+  private String USER_CONSOLE;
+  @Value(value = "${app.auth-client.password-console}")
+  private String PASSWORD_CONSOLE;
+  @Value(value = "${app.auth-client.client-secret}")
+  private String CLIENT_SECRET;
+
+  public RealmResource getRealmResource() {
     Keycloak keycloak =
         KeycloakBuilder.builder()
             .serverUrl(SERVER_URL)
@@ -30,7 +41,7 @@ public class KeycloakConfig {
     return keycloak.realm(REALM_NAME);
   }
 
-  public static UsersResource getUserResource() {
+  public UsersResource getUserResource() {
     RealmResource realmResource = getRealmResource();
     return realmResource.users();
   }

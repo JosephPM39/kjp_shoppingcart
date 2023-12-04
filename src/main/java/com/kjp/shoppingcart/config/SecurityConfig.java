@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -26,26 +27,21 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             http -> {
-              http.requestMatchers("/api/sign-in").permitAll();
-              http.requestMatchers("/api/welcome").permitAll();
+              http.requestMatchers("/api/sign-in/**").permitAll();
+              http.requestMatchers("/api/sign-up/**").permitAll();
+              http.requestMatchers("/api/welcome/**").permitAll();
               http.requestMatchers("/login").permitAll();
               http.anyRequest().authenticated();
             })
         .oauth2Login(
-            oauth -> {
-              oauth.loginPage("/login");
-            })
+            oauth -> oauth.loginPage("/login"))
         .oauth2ResourceServer(
-            oauth -> {
-              oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter));
-            })
+            oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
         .sessionManagement(
-            session -> {
-              session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-            })
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .logout(
             logout -> {
               logout.logoutUrl("/api/sign-out");

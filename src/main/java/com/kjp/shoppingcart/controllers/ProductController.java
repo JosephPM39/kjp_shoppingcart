@@ -2,11 +2,13 @@ package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.exceptions.BadStrategySearchParams;
-import com.kjp.shoppingcart.services.ProductService;
+import com.kjp.shoppingcart.services.IProductService;
 import com.kjp.shoppingcart.services.patterns.search_product_chain.SearchProductStrategyEnum;
 import java.util.Optional;
 import java.util.UUID;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-  ProductService productService;
+  private final IProductService productService;
 
   @Autowired
-  public ProductController(ProductService productService) {
+  public ProductController(IProductService productService) {
     this.productService = productService;
   }
 
@@ -28,10 +30,21 @@ public class ProductController {
   @PreAuthorize(
       "hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
   public Page<ProductEntity> getAll(
-      @PathParam("pageSize") Optional<Integer> pageSize,
-      @PathParam("pageNumber") Optional<Integer> pageNumber,
-      @PathParam("strategy") Optional<SearchProductStrategyEnum> strategy,
-      @PathParam("strategyValue") Optional<String> strategyValue) {
+      @RequestParam("pageSize") Integer pageSizeParam,
+      @RequestParam("pageNumber") Integer pageNumberParam,
+      @RequestParam("strategy") SearchProductStrategyEnum strategyParam,
+      @RequestParam("strategyValue") String strategyValueParam) {
+
+    System.out.println(pageNumberParam);
+    System.out.println(pageSizeParam);
+    System.out.println(strategyValueParam);
+    System.out.println(strategyParam);
+
+    Optional<Integer> pageSize = Optional.ofNullable(pageSizeParam);
+    Optional<Integer> pageNumber = Optional.ofNullable(pageNumberParam);
+    Optional<SearchProductStrategyEnum> strategy = Optional.ofNullable(strategyParam);
+    Optional<String> strategyValue = Optional.ofNullable(strategyValueParam);
+
 
     if (isOnlyOneOfBothPresent(strategy, strategyValue)) {
       String error =

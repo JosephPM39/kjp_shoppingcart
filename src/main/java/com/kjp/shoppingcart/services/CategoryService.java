@@ -28,6 +28,7 @@ public class CategoryService implements ICategoryService {
     this.productCategoryRepository = productCategoryRepository;
   }
 
+  @Override
   public List<CategoryEntity> getAll() {
     return categoriesRepository.findAll();
   }

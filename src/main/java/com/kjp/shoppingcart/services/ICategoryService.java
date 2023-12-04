@@ -2,10 +2,13 @@ package com.kjp.shoppingcart.services;
 
 import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
+
+import java.util.List;
 import java.util.UUID;
 
 public interface ICategoryService {
 
+  public List<CategoryEntity> getAll();
   public CategoryEntity getById(UUID id);
 
   public void create(CategoryEntity category);

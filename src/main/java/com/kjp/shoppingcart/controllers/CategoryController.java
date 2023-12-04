@@ -2,7 +2,7 @@ package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
-import com.kjp.shoppingcart.services.CategoryService;
+import com.kjp.shoppingcart.services.ICategoryService;
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import java.util.List;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
-  private final CategoryService categoriesService;
+  private final ICategoryService categoriesService;
 
   @Autowired
-  public CategoryController(CategoryService categoriesService) {
+  public CategoryController(ICategoryService categoriesService) {
     this.categoriesService = categoriesService;
   }
 

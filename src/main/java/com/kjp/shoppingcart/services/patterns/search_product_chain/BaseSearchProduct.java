@@ -22,8 +22,11 @@ public abstract class BaseSearchProduct implements ISearchProduct {
   public Page<ProductEntity> search(
       String value, Pageable pageable, SearchProductStrategyEnum strategy) {
     if (SearchProductStrategyEnum.NONE != strategy) {
-      throw new BadStrategyConfigException(
-          "No chain handler for Search products strategy: ".concat(strategy.name()));
+      if (nextSearch == null) {
+        throw new BadStrategyConfigException(
+                "No chain handler for Search products strategy: ".concat(strategy.name()));
+      }
+      return nextSearch.search(value, pageable, strategy);
     }
     return productRepository.findAll(pageable);
   }

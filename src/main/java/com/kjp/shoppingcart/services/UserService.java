@@ -35,15 +35,17 @@ import org.springframework.stereotype.Service;
 public class UserService implements IUserService {
 
   IUserRepository userRepository;
+  KeycloakConfig keycloakConfig;
 
   @Autowired
-  public UserService(IUserRepository userRepository) {
+  public UserService(IUserRepository userRepository, KeycloakConfig keycloakConfig) {
     this.userRepository = userRepository;
+    this.keycloakConfig = keycloakConfig;
   }
 
   @Override
   public List<GetUserDTO> findAllUsers() {
-    List<UserRepresentation> users = KeycloakConfig.getRealmResource().users().list();
+    List<UserRepresentation> users = keycloakConfig.getRealmResource().users().list();
     return UserMapper.toGetUserDTO(users);
   }
 
@@ -66,7 +68,7 @@ public class UserService implements IUserService {
   @Override
   public UserRepresentation searchUserByUsername(String username) {
     List<UserRepresentation> users =
-        KeycloakConfig.getRealmResource().users().searchByUsername(username, true);
+        keycloakConfig.getRealmResource().users().searchByUsername(username, true);
     Optional<UserRepresentation> user =
         users.stream()
             .filter(
@@ -107,17 +109,13 @@ public class UserService implements IUserService {
     throw new ResourceNotFoundException("No user exists with the username: ".concat(username));
   }
 
-  public UserRepresentation findUserById(UUID userId) {
-    return KeycloakConfig.getRealmResource().users().get(userId.toString()).toRepresentation();
-  }
-
   @Override
   public void createUser(@NonNull UpdateOrCreateUserDTO dto) {
 
     UserWithDefaultRoleDTO userDTO = UserMapper.toUserWithDefaultRoleDTO(dto);
 
     int status = 0;
-    UsersResource usersResource = KeycloakConfig.getUserResource();
+    UsersResource usersResource = keycloakConfig.getUserResource();
 
     UserRepresentation userRepresentation = new UserRepresentation();
     userRepresentation.setFirstName(userDTO.firstName());
@@ -142,7 +140,7 @@ public class UserService implements IUserService {
 
       usersResource.get(userId).resetPassword(credentialRepresentation);
 
-      RealmResource realmResource = KeycloakConfig.getRealmResource();
+      RealmResource realmResource = keycloakConfig.getRealmResource();
 
       List<RoleRepresentation> rolesRepresentation = null;
 
@@ -180,7 +178,7 @@ public class UserService implements IUserService {
 
   @Override
   public void deleteUser(UUID keycloakId) {
-    KeycloakConfig.getUserResource().get(keycloakId.toString()).remove();
+    keycloakConfig.getUserResource().get(keycloakId.toString()).remove();
     deleteLocalUser(keycloakId);
   }
 
@@ -219,7 +217,7 @@ public class UserService implements IUserService {
     user.setEmailVerified(true);
     user.setCredentials(Collections.singletonList(credentialRepresentation));
 
-    UserResource usersResource = KeycloakConfig.getUserResource().get(userKeycloakId.toString());
+    UserResource usersResource = keycloakConfig.getUserResource().get(userKeycloakId.toString());
     usersResource.update(user);
 
     updateLocalUser(userKeycloakId, userDTO);
@@ -241,7 +239,7 @@ public class UserService implements IUserService {
 
   @Override
   public void addAdminRoleToUser(String username) {
-    RealmResource realmResource = KeycloakConfig.getRealmResource();
+    RealmResource realmResource = keycloakConfig.getRealmResource();
     UserRepresentation user = searchUserByUsername(username);
     List<RoleRepresentation> role = List.of(realmResource.roles().get("admin").toRepresentation());
     realmResource.users().get(user.getId()).roles().realmLevel().add(role);

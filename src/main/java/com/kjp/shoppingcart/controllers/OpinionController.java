@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/opinions")
 public class OpinionController {
 
-  IOpinionService opinionService;
-  IUserService userService;
+  private final IOpinionService opinionService;
+  private final IUserService userService;
 
   @Autowired
   public OpinionController(IOpinionService opinionService, IUserService userService) {

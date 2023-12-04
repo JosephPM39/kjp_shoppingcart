@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-  IUserService userService;
+  private final IUserService userService;
 
   public UserController(IUserService userService) {
     this.userService = userService;
@@ -29,12 +29,6 @@ public class UserController {
       "hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
   public UserEntity getUserByUsername(@PathVariable("username") String username) {
     return userService.searchLocalUserByUsername(username);
-  }
-
-  @PostMapping("/")
-  @PreAuthorize("permitAll()")
-  public void createUser(@RequestBody UpdateOrCreateUserDTO dto) {
-    userService.createUser(dto);
   }
 
   @DeleteMapping("/")

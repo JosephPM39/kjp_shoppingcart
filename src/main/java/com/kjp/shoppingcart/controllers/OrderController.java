@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
-  IUserService userService;
-  IOrderService orderService;
+  private final IUserService userService;
+  private final IOrderService orderService;
 
   @Autowired
   public OrderController(IOrderService orderService, IUserService userService) {

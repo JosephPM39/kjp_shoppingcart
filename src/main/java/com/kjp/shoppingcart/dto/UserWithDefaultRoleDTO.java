@@ -12,7 +12,7 @@ public record UserWithDefaultRoleDTO(
     String password,
     Set<String> roles) {
   public UserWithDefaultRoleDTO {
-    if (roles.isEmpty()) {
+    if (roles == null || roles.isEmpty()) {
       roles = Set.of("user");
     }
   }
