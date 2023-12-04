@@ -7,8 +7,12 @@ import com.kjp.shoppingcart.services.IOpinionService;
 import com.kjp.shoppingcart.services.IUserService;
 import java.util.List;
 import java.util.UUID;
+
+import com.kjp.shoppingcart.validations.groups.CreateGroup;
+import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -82,14 +86,14 @@ public class OpinionController {
 
   @PostMapping("/product-review")
   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-user'))")
-  public void createReview(@RequestBody ReviewDTO reviewDTO) {
+  public void createReview(@Validated(CreateGroup.class) @RequestBody ReviewDTO reviewDTO) {
     UUID userId = this.userService.getAuthenticatedLocalUserId();
     this.opinionService.createReview(userId, reviewDTO);
   }
 
   @PatchMapping("/product-review")
   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-user'))")
-  public void updateReview(@RequestBody ReviewDTO reviewDTO) {
+  public void updateReview(@Validated(UpdateGroup.class) @RequestBody ReviewDTO reviewDTO) {
     UUID userId = this.userService.getAuthenticatedLocalUserId();
     this.opinionService.updateReview(userId, reviewDTO);
   }

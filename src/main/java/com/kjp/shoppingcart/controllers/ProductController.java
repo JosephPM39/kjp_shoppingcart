@@ -9,10 +9,13 @@ import java.util.UUID;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import com.kjp.shoppingcart.validations.groups.CreateGroup;
+import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -74,13 +77,13 @@ public class ProductController {
 
   @PostMapping
   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
-  public void create(@RequestBody ProductEntity product) {
+  public void create(@Validated(CreateGroup.class) @RequestBody ProductEntity product) {
     productService.create(product);
   }
 
   @PatchMapping("/{id}")
   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
-  public void update(@PathVariable UUID id, @RequestBody ProductEntity product) {
+  public void update(@PathVariable UUID id, @Validated(UpdateGroup.class) @RequestBody ProductEntity product) {
     productService.update(id, product);
   }
 

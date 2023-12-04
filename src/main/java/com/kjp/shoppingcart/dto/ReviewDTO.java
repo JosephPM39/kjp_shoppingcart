@@ -6,6 +6,7 @@ import lombok.Builder;
 @Builder
 public record ReviewDTO(
         UUID productId,
+
         String title,
         String description
 ) {}
