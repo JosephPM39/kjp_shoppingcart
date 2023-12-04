@@ -4,5 +4,5 @@ import com.kjp.shoppingcart.dto.SignInCredentialsDTO;
 import com.kjp.shoppingcart.dto.TokenDTO;
 
 public interface IAuthService {
-    public TokenDTO signIn(SignInCredentialsDTO credentials);
+  public TokenDTO signIn(SignInCredentialsDTO credentials);
 }

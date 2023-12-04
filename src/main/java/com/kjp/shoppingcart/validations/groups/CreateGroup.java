@@ -1,4 +1,3 @@
 package com.kjp.shoppingcart.validations.groups;
 
-public interface CreateGroup {
-}
+public interface CreateGroup {}

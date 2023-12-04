@@ -7,16 +7,16 @@ import org.springframework.data.domain.Pageable;
 
 public class SearchProductByCategoryNameHandler extends BaseSearchProduct {
 
-    public SearchProductByCategoryNameHandler(IProductRepository productRepository) {
-        super(productRepository);
-    }
+  public SearchProductByCategoryNameHandler(IProductRepository productRepository) {
+    super(productRepository);
+  }
 
-    @Override
-    public Page<ProductEntity> search(String value, Pageable pageable, SearchProductStrategyEnum strategy) {
-        if (SearchProductStrategyEnum.BY_CATEGORY_NAME != strategy) {
-           return super.search(value, pageable, strategy);
-        }
-        return super.getProductRepository().findByCategoryName(value, pageable);
+  @Override
+  public Page<ProductEntity> search(
+      String value, Pageable pageable, SearchProductStrategyEnum strategy) {
+    if (SearchProductStrategyEnum.BY_CATEGORY_NAME != strategy) {
+      return super.search(value, pageable, strategy);
     }
-
+    return super.getProductRepository().findByCategoryName(value, pageable);
+  }
 }

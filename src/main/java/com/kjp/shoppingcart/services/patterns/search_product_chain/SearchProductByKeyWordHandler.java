@@ -6,15 +6,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public class SearchProductByKeyWordHandler extends BaseSearchProduct {
-    protected SearchProductByKeyWordHandler(IProductRepository productRepository) {
-        super(productRepository);
-    }
+  protected SearchProductByKeyWordHandler(IProductRepository productRepository) {
+    super(productRepository);
+  }
 
-    @Override
-    public Page<ProductEntity> search(String value, Pageable pageable, SearchProductStrategyEnum strategy) {
-        if (SearchProductStrategyEnum.BY_KEYWORD_IN_NAME_OR_DESCRIPTION != strategy) {
-            return super.search(value, pageable, strategy);
-        }
-        return super.getProductRepository().findByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCase(value, value, pageable);
+  @Override
+  public Page<ProductEntity> search(
+      String value, Pageable pageable, SearchProductStrategyEnum strategy) {
+    if (SearchProductStrategyEnum.BY_KEYWORD_IN_NAME_OR_DESCRIPTION != strategy) {
+      return super.search(value, pageable, strategy);
     }
+    return super.getProductRepository()
+        .findByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCase(value, value, pageable);
+  }
 }

@@ -15,22 +15,20 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class AuthController {
 
-    @Autowired
-    private IAuthService authService;
+  @Autowired private IAuthService authService;
 
-    @PostMapping("/sign-in")
-    public TokenDTO login(@Valid @RequestBody SignInCredentialsDTO credentials) {
-        return authService.signIn(credentials);
-    }
+  @PostMapping("/sign-in")
+  public TokenDTO login(@Valid @RequestBody SignInCredentialsDTO credentials) {
+    return authService.signIn(credentials);
+  }
 
-    @PostMapping("/sign-out")
-    public String logout() {
-        return "Logout successful";
-    }
+  @PostMapping("/sign-out")
+  public String logout() {
+    return "Logout successful";
+  }
 
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Welcome";
-    }
-
+  @GetMapping("/welcome")
+  public String welcome() {
+    return "Welcome";
+  }
 }

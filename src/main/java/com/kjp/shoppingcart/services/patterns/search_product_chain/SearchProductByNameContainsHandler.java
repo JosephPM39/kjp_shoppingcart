@@ -7,15 +7,16 @@ import org.springframework.data.domain.Pageable;
 
 public class SearchProductByNameContainsHandler extends BaseSearchProduct {
 
-    protected SearchProductByNameContainsHandler(IProductRepository productRepository) {
-        super(productRepository);
-    }
+  protected SearchProductByNameContainsHandler(IProductRepository productRepository) {
+    super(productRepository);
+  }
 
-    @Override
-    public Page<ProductEntity> search(String value, Pageable pageable, SearchProductStrategyEnum strategy) {
-        if (SearchProductStrategyEnum.BY_NAME_CONTAINS != strategy) {
-            return super.search(value, pageable, strategy);
-        }
-        return super.getProductRepository().findByNameContainsIgnoreCase(value, pageable);
+  @Override
+  public Page<ProductEntity> search(
+      String value, Pageable pageable, SearchProductStrategyEnum strategy) {
+    if (SearchProductStrategyEnum.BY_NAME_CONTAINS != strategy) {
+      return super.search(value, pageable, strategy);
     }
+    return super.getProductRepository().findByNameContainsIgnoreCase(value, pageable);
+  }
 }

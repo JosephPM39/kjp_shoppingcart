@@ -16,35 +16,44 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationConverter jwtAuthenticationConverter;
+  private JwtAuthenticationConverter jwtAuthenticationConverter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(http -> {
-                    http.requestMatchers("/api/sign-in").permitAll();
-                    http.requestMatchers("/api/welcome").permitAll();
-                    http.requestMatchers("/login").permitAll();
-                    http.anyRequest().authenticated();
-                })
-                .oauth2Login(oauth ->{
-                    oauth.loginPage("/login");
-                })
-                .oauth2ResourceServer(oauth -> {
-                     oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter));
-                })
-                .sessionManagement(session -> {
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                })
-                .logout(logout -> {
-                    logout.logoutUrl("/api/sign-out");
-                    logout.invalidateHttpSession(true);
-                    logout.permitAll();
-                    logout.clearAuthentication(true);
-                    logout.logoutSuccessUrl("/api/welcome");
-                })
-                .build();
-    }
+  @Autowired
+  public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter) {
+      this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+  }
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    return httpSecurity
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(
+            http -> {
+              http.requestMatchers("/api/sign-in").permitAll();
+              http.requestMatchers("/api/welcome").permitAll();
+              http.requestMatchers("/login").permitAll();
+              http.anyRequest().authenticated();
+            })
+        .oauth2Login(
+            oauth -> {
+              oauth.loginPage("/login");
+            })
+        .oauth2ResourceServer(
+            oauth -> {
+              oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter));
+            })
+        .sessionManagement(
+            session -> {
+              session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            })
+        .logout(
+            logout -> {
+              logout.logoutUrl("/api/sign-out");
+              logout.invalidateHttpSession(true);
+              logout.permitAll();
+              logout.clearAuthentication(true);
+              logout.logoutSuccessUrl("/api/welcome");
+            })
+        .build();
+  }
 }

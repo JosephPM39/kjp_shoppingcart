@@ -11,20 +11,20 @@ import org.springframework.data.domain.Pageable;
 @Setter
 public abstract class BaseSearchProduct implements ISearchProduct {
 
-    private ISearchProduct nextSearch;
-    @Getter
-    private IProductRepository productRepository;
+  private ISearchProduct nextSearch;
+  @Getter private IProductRepository productRepository;
 
-    protected BaseSearchProduct(IProductRepository productRepository){
-        this.productRepository = productRepository;
+  protected BaseSearchProduct(IProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
+
+  @Override
+  public Page<ProductEntity> search(
+      String value, Pageable pageable, SearchProductStrategyEnum strategy) {
+    if (SearchProductStrategyEnum.NONE != strategy) {
+      throw new BadStrategyConfigException(
+          "No chain handler for Search products strategy: ".concat(strategy.name()));
     }
-
-    @Override
-    public Page<ProductEntity> search(String value, Pageable pageable, SearchProductStrategyEnum strategy) {
-        if (SearchProductStrategyEnum.NONE != strategy) {
-            throw new BadStrategyConfigException("No chain handler for Search products strategy: ".concat(strategy.name()));
-        }
-        return productRepository.findAll(pageable);
-    }
-
+    return productRepository.findAll(pageable);
+  }
 }

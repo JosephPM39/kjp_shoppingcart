@@ -13,8 +13,11 @@ import lombok.Setter;
 @Setter
 @Entity(name = "brands")
 public class BrandEntity extends BaseEntity {
-    @Size(min = 1, max = 40, groups = {CreateGroup.class, UpdateGroup.class})
-    @NotBlank(groups = CreateGroup.class)
-    @Column(nullable = false, length = 40, unique = true)
-    private String name;
+  @Size(
+      min = 1,
+      max = 40,
+      groups = {CreateGroup.class, UpdateGroup.class})
+  @NotBlank(groups = CreateGroup.class)
+  @Column(nullable = false, length = 40, unique = true)
+  private String name;
 }

@@ -1,47 +1,46 @@
 package com.kjp.shoppingcart.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Entity(name = "products")
 public class ProductEntity extends BaseEntity {
 
-   @Column(length = 40, nullable = false)
-   private String name;
+  @Column(length = 40, nullable = false)
+  private String name;
 
-   @ManyToOne()
-   @JoinColumn(name = "brand_id", referencedColumnName = "id", nullable = false)
-   private BrandEntity brand;
+  @ManyToOne()
+  @JoinColumn(name = "brand_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+  private BrandEntity brand;
 
-   @Column(nullable = false)
-   private BigDecimal price;
+  @Column(name = "brand_id")
+  private UUID brandId;
 
-   @Column(name = "discount_offer")
-   private BigDecimal discountOffer = new BigDecimal(0.00);
+  @Column(nullable = false)
+  private BigDecimal price;
 
-   @Column
-   private String description;
+  @Column(name = "discount_offer")
+  private BigDecimal discountOffer = new BigDecimal(0.00);
 
-   @Column
-   private String code;
+  @Column private String description;
 
-   @ManyToMany()
-   @JoinTable(
+  @Column private String code;
+
+  @ManyToMany()
+  @JoinTable(
       name = "products_categories",
-      joinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false),
-      inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-   )
-   private List<CategoryEntity> categories;
+      joinColumns =
+          @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false),
+      inverseJoinColumns =
+          @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false))
+  private List<CategoryEntity> categories;
 
-   @Column
-   private boolean disabled;
-
+  @Column private boolean disabled;
 }

@@ -12,8 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "com.kjp.shoppingcart.anotations")
 public class ShoppingcartApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ShoppingcartApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(ShoppingcartApplication.class, args);
+  }
 }
