@@ -24,14 +24,14 @@ public class CartController {
   }
 
   @PostMapping("/products")
-  @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
+  @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-user'))")
   public void addProductsToCart(@RequestBody ProductsIdListDTO productsIdListDTO) {
     UUID userId = userService.getAuthenticatedLocalUserId();
     this.cartService.addProductsToUserCart(userId, productsIdListDTO);
   }
 
   @DeleteMapping("/products/{productId}/{quantity}")
-  @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
+  @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-user'))")
   public void removeProductFromCart(
       @PathVariable("productId") UUID productId, @PathVariable("quantity") Integer quantity) {
     UUID userId = userService.getAuthenticatedLocalUserId();
@@ -39,14 +39,14 @@ public class CartController {
   }
 
   @DeleteMapping("/products/{productId}/all")
-  @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
+  @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-user'))")
   public void removeAllOfProductFromCart(@PathVariable("productId") UUID productId) {
     UUID userId = userService.getAuthenticatedLocalUserId();
     this.cartService.removeAllOfProductFromCart(userId, productId);
   }
 
   @GetMapping("/products")
-  @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
+  @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-user'))")
   public List<ProductCartDTO> getAllCartProducts() {
     UUID userId = userService.getAuthenticatedLocalUserId();
     return this.cartService.getAllCartProducts(userId);

@@ -11,6 +11,8 @@ import com.kjp.shoppingcart.mappers.ProductCartMapper;
 import com.kjp.shoppingcart.repositories.*;
 import com.kjp.shoppingcart.utils.ProductServiceUtils;
 import java.util.*;
+
+import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +49,7 @@ public class CartService implements ICartService {
         compactedProductIdQuantities.keySet().stream().toList(), this.productRepository);
 
     List<ProductCartEntity> productCartEntities =
-        getProductCartList(compactedProductIdQuantities, userCart.getUserId());
+        getProductCartList(compactedProductIdQuantities, userCart.getId());
     List<ProductCartEntity> finalProductCartEntities =
         getProductCartListWithExistingSum(productCartEntities);
 
@@ -57,7 +59,12 @@ public class CartService implements ICartService {
   @Override
   public void removeAllOfProductFromCart(UUID userId, UUID productId) {
     CartEntity userCart = getUserCart(userId);
-    this.productCartRepository.deleteByCartIdAndProductId(userCart.getId(), productId);
+    Optional<ProductCartEntity> productCart = this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
+    if (productCart.isPresent()) {
+      this.productCartRepository.deleteById(productCart.get().getId());
+      return;
+    }
+    throw new ResourceNotFoundException("The actual user don't has i his cart, a product with the id: ".concat(productId.toString()));
   }
 
   @Override
@@ -90,7 +97,11 @@ public class CartService implements ICartService {
     }
 
     if (quantity.equals(prod.getQuantity())) {
-      this.productCartRepository.deleteByCartIdAndProductId(userCart.getId(), productId);
+      Optional<ProductCartEntity> productCart = this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
+      if (productCart.isEmpty()) {
+        throw new InternalServerErrorException("Product cart not found, but could be present");
+      }
+      this.productCartRepository.deleteById(productCart.get().getId());
       return;
     }
 

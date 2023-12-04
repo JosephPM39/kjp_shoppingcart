@@ -3,12 +3,17 @@ package com.kjp.shoppingcart.entities;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.UUID;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity(name = "orders")
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderEntity extends BaseEntity {
   @ManyToOne
   @JoinColumn(
