@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -84,19 +85,54 @@ public class UserService implements IUserService {
 
   @Override
   public UserEntity findUserByKeycloakId(UUID keycloakId) {
-    return null;
+    Optional<UserEntity> user = userRepository.findFirstByKeycloakIdEquals(keycloakId);
+    if (user.isPresent()) {
+      return user.get();
+    }
+    throw new ResourceNotFoundException("User not found with the keycloakId: ".concat(keycloakId.toString()));
+  }
+
+  public UserEntity findOrCreateUserByKeycloakId(UUID keycloakId) {
+    Optional<UserEntity> user = this.userRepository.findFirstByKeycloakIdEquals(keycloakId);
+    if (user.isPresent()) {
+      return user.get();
+    }
+    String username = getAuthenticatedUserKeycloakUsername();
+    createLocalUser(username);
+    user = this.userRepository.findFirstByKeycloakIdEquals(keycloakId);
+    if (user.isPresent()) {
+      return user.get();
+    }
+    throw new InternalServerErrorException("Server could no find or create the local user");
   }
 
   @Override
   public UUID getAuthenticatedUserKeycloakId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String userId = authentication.getName();
-    return UUID.fromString(userId);
+
+    if (authentication instanceof JwtAuthenticationToken) {
+      JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+      String userId = jwtAuthenticationToken.getToken().getSubject();
+      return UUID.fromString(userId);
+    }
+
+    return null;
+  }
+
+  private String getAuthenticatedUserKeycloakUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication instanceof JwtAuthenticationToken) {
+      JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+      return jwtAuthenticationToken.getToken().getClaim("preferred_username");
+    }
+
+    return null;
   }
 
   @Override
   public UUID getAuthenticatedLocalUserId() {
-    UserEntity user = findUserByKeycloakId(getAuthenticatedUserKeycloakId());
+    UserEntity user = findOrCreateUserByKeycloakId(getAuthenticatedUserKeycloakId());
     return user.getId();
   }
 
@@ -234,6 +270,8 @@ public class UserService implements IUserService {
     UserEntity oldUser = optionalUserEntity.get();
     UserEntity newUser =
         ObjectUtils.getInstanceWithNotNullFields(changes, oldUser, UserEntity.class);
+    newUser.setId(oldUser.getId());
+    newUser.setCreatedAt(oldUser.getCreatedAt());
     this.userRepository.save(newUser);
   }
 

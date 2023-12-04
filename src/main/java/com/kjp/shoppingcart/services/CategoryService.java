@@ -3,15 +3,19 @@ package com.kjp.shoppingcart.services;
 import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
 import com.kjp.shoppingcart.entities.ProductCategoryEntity;
+import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.exceptions.ResourceAlreadyExistsException;
 import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import com.kjp.shoppingcart.repositories.ICategoryRepository;
 import com.kjp.shoppingcart.repositories.IProductCategoryRepository;
+import com.kjp.shoppingcart.repositories.IProductRepository;
 import com.kjp.shoppingcart.utils.ObjectUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +24,16 @@ public class CategoryService implements ICategoryService {
   private final ICategoryRepository categoriesRepository;
   private final IProductCategoryRepository productCategoryRepository;
 
+  private final IProductRepository productRepository;
+
   @Autowired
   public CategoryService(
       ICategoryRepository categoriesRepository,
-      IProductCategoryRepository productCategoryRepository) {
+      IProductCategoryRepository productCategoryRepository,
+      IProductRepository productRepository) {
     this.categoriesRepository = categoriesRepository;
     this.productCategoryRepository = productCategoryRepository;
+    this.productRepository = productRepository;
   }
 
   @Override
@@ -53,6 +61,8 @@ public class CategoryService implements ICategoryService {
     CategoryEntity oldCategory = this.getById(id);
     CategoryEntity categoryWithChanges =
         ObjectUtils.getInstanceWithNotNullFields(category, oldCategory, CategoryEntity.class);
+    categoryWithChanges.setId(oldCategory.getId());
+    categoryWithChanges.setCreatedAt(oldCategory.getCreatedAt());
     categoriesRepository.save(categoryWithChanges);
   }
 
@@ -107,5 +117,19 @@ public class CategoryService implements ICategoryService {
               .concat(id.toString())
               .concat(" Not has the product with the ID: ".concat(productId.toString())));
     }
+  }
+
+  @Override
+  public List<ProductEntity> getProductsForCategory(UUID id) {
+    List<ProductCategoryEntity> productCategoryEntities = this.productCategoryRepository.findAllByCategoryIdEquals(id);
+    List<ProductEntity> productEntities = new ArrayList<>();
+    for (ProductCategoryEntity productCategoryEntity : productCategoryEntities) {
+      Optional<ProductEntity> product = this.productRepository.findById(productCategoryEntity.getProductId());
+      if (product.isEmpty()) {
+        throw new InternalServerErrorException(" Problems with DB ");
+      }
+      productEntities.add(product.get());
+    }
+    return productEntities;
   }
 }

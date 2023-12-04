@@ -2,6 +2,8 @@ package com.kjp.shoppingcart.repositories;
 
 import com.kjp.shoppingcart.entities.ProductEntity;
 import java.util.UUID;
+
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +15,7 @@ public interface IProductRepository extends IBaseRepository<ProductEntity, UUID>
 
   public Page<ProductEntity> findByNameContainsIgnoreCase(String name, Pageable pageable);
 
+  @Transactional
   @Query("SELECT p FROM products p JOIN p.categories c WHERE c.name = :categoryName")
   public Page<ProductEntity> findByCategoryName(
       @Param("categoryName") String categoryName, Pageable pageable);

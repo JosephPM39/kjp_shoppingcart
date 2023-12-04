@@ -65,6 +65,8 @@ public class ProductService implements IProductService {
     ProductEntity oldProduct = this.getById(id);
     ProductEntity productWithChanges =
         ObjectUtils.getInstanceWithNotNullFields(changes, oldProduct, ProductEntity.class);
+    productWithChanges.setId(id);
+    productWithChanges.setCreatedAt(oldProduct.getCreatedAt());
     productRepository.save(productWithChanges);
   }
 }

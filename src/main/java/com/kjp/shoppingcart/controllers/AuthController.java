@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@Validated
 public class AuthController {
 
   private final IAuthService authService;
@@ -27,7 +26,7 @@ public class AuthController {
   }
 
   @PostMapping("/sign-in")
-  public TokenDTO login(@Valid @RequestBody SignInCredentialsDTO credentials) {
+  public TokenDTO login(@Validated @RequestBody SignInCredentialsDTO credentials) {
     return authService.signIn(credentials);
   }
 

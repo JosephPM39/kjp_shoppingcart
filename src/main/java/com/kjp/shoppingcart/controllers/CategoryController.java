@@ -2,6 +2,7 @@ package com.kjp.shoppingcart.controllers;
 
 import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.entities.CategoryEntity;
+import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.services.ICategoryService;
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
@@ -34,6 +35,13 @@ public class CategoryController {
       "hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
   public CategoryEntity getById(@PathVariable UUID id) {
     return categoriesService.getById(id);
+  }
+
+  @GetMapping("/{id}/products")
+  @PreAuthorize(
+      "hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
+  public List<ProductEntity> getProductsForCategory(@PathVariable UUID id) {
+    return categoriesService.getProductsForCategory(id);
   }
 
   @PostMapping("/{id}/products")

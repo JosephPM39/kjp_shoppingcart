@@ -91,6 +91,8 @@ public class OrderService implements IOrderService {
     }
     OrderEntity finalOrder =
         ObjectUtils.getInstanceWithNotNullFields(changes, optionalOrder.get(), OrderEntity.class);
+    finalOrder.setId(orderId);
+    finalOrder.setCreatedAt(optionalOrder.get().getCreatedAt());
     this.orderRepository.save(finalOrder);
   }
 

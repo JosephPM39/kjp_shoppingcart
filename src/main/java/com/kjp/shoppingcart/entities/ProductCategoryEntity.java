@@ -22,7 +22,6 @@ public class ProductCategoryEntity extends BaseEntity {
   @ManyToOne
   @JoinColumn(
       name = "product_id",
-      referencedColumnName = "id",
       nullable = false,
       insertable = false,
       updatable = false)
@@ -31,7 +30,6 @@ public class ProductCategoryEntity extends BaseEntity {
   @ManyToOne
   @JoinColumn(
       name = "category_id",
-      referencedColumnName = "id",
       nullable = false,
       insertable = false,
       updatable = false)

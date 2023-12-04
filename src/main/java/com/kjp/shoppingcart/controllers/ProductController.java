@@ -33,15 +33,10 @@ public class ProductController {
   @PreAuthorize(
       "hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
   public Page<ProductEntity> getAll(
-      @RequestParam("pageSize") Integer pageSizeParam,
-      @RequestParam("pageNumber") Integer pageNumberParam,
-      @RequestParam("strategy") SearchProductStrategyEnum strategyParam,
-      @RequestParam("strategyValue") String strategyValueParam) {
-
-    System.out.println(pageNumberParam);
-    System.out.println(pageSizeParam);
-    System.out.println(strategyValueParam);
-    System.out.println(strategyParam);
+      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSizeParam,
+      @RequestParam(name = "pageNumber", defaultValue = "0") Integer pageNumberParam,
+      @RequestParam(name = "strategy", defaultValue = "NONE") SearchProductStrategyEnum strategyParam,
+      @RequestParam(name = "strategyValue", defaultValue = "") String strategyValueParam) {
 
     Optional<Integer> pageSize = Optional.ofNullable(pageSizeParam);
     Optional<Integer> pageNumber = Optional.ofNullable(pageNumberParam);
@@ -75,7 +70,7 @@ public class ProductController {
     return productService.getById(id);
   }
 
-  @PostMapping
+  @PostMapping("/")
   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
   public void create(@Validated(CreateGroup.class) @RequestBody ProductEntity product) {
     productService.create(product);
