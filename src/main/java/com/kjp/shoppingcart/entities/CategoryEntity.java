@@ -15,10 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity(name = "categories")
 public class CategoryEntity extends BaseEntity {
-  @Size(
-      max = 40,
-      min = 1,
-      groups = {CreateGroup.class, UpdateGroup.class})
+  @Size(max = 40, min = 1, groups = {CreateGroup.class, UpdateGroup.class})
   @NotBlank(groups = CreateGroup.class)
   @Column(length = 40, nullable = false, unique = true)
   private String name;
