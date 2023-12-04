@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.PathParam;
@@ -27,6 +28,7 @@ public class ProductController {
    }
 
    @GetMapping
+   @PreAuthorize("hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
    public Page<ProductEntity> getAll(
          @PathParam("pageSize") Optional<Integer> pageSize,
          @PathParam("pageNumber") Optional<Integer> pageNumber,
@@ -50,26 +52,31 @@ public class ProductController {
    }
 
    @GetMapping("/{id}")
+   @PreAuthorize("hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
    public ProductEntity getById(@PathVariable UUID id) {
       return productService.getById(id);
    }
 
    @PostMapping
+   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
    public void create(@RequestBody ProductEntity product) {
       productService.create(product);
    }
 
    @PatchMapping("/{id}")
+   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
    public void update(@PathVariable UUID id, @RequestBody ProductEntity product) {
       productService.update(id, product);
    }
 
    @PostMapping("/{id}/disable")
+   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
    public void disable(@PathVariable UUID id) {
       productService.disable(id);
    }
 
    @PostMapping("/{id}/enable")
+   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
    public void enable(@PathVariable UUID id) {
       productService.enable(id);
    }

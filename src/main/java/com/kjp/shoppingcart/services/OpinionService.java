@@ -11,18 +11,21 @@ import com.kjp.shoppingcart.repositories.IProductRepository;
 import com.kjp.shoppingcart.repositories.IReviewRepository;
 import com.kjp.shoppingcart.repositories.IVoteRepository;
 import com.kjp.shoppingcart.utils.ProductServiceUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class OpinionService implements IOpinionService {
 
     IVoteRepository voteRepository;
     IReviewRepository reviewRepository;
-
     IProductRepository productRepository;
 
+    @Autowired
     public OpinionService(IVoteRepository voteRepository, IReviewRepository reviewRepository, IProductRepository productRepository) {
         this.voteRepository = voteRepository;
         this.reviewRepository = reviewRepository;

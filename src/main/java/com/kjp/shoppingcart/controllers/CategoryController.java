@@ -6,6 +6,7 @@ import com.kjp.shoppingcart.services.CategoryService;
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,41 +24,49 @@ public class CategoryController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
     public List<CategoryEntity> getAll() {
         return categoriesService.getAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole(@environment.getProperty('app.auth.role-admin'), @environment.getProperty('app.auth.role-user'))")
     public CategoryEntity getById(@PathVariable UUID id) {
         return categoriesService.getById(id);
     }
 
     @PostMapping("/{id}/products")
+    @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
     public void addProductsToCategory(@PathVariable UUID id, @RequestBody ProductsIdListDTO productsId) {
         categoriesService.addProductsToCategory(id, productsId);
     }
 
     @DeleteMapping("/{id}/products/{productId}")
+    @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
     public void removeProductFromCategory(@PathVariable UUID id, @PathVariable UUID productId) {
         categoriesService.removeProductFromCategory(id, productId);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
     public void create(@Validated(CreateGroup.class) @RequestBody CategoryEntity category) {
         categoriesService.create(category);
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
     public void update(@PathVariable UUID id, @Validated(UpdateGroup.class) @RequestBody CategoryEntity category) {
         categoriesService.update(id, category);
     }
 
     @PostMapping("/{id}/disable")
+    @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
     public void disable(@PathVariable UUID id) {
         categoriesService.disable(id);
     }
 
     @PostMapping("/{id}/enable")
+    @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
     public void enable(@PathVariable UUID id) {
         categoriesService.enable(id);
     }

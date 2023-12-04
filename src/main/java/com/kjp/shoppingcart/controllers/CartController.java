@@ -5,6 +5,7 @@ import com.kjp.shoppingcart.dto.ProductsIdListDTO;
 import com.kjp.shoppingcart.services.ICartService;
 import com.kjp.shoppingcart.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +25,14 @@ public class CartController {
     }
 
     @PostMapping("/products")
+    @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
     public void addProductsToCart(@RequestBody ProductsIdListDTO productsIdListDTO) {
         UUID userId = userService.getAuthenticatedLocalUserId();
         this.cartService.addProductsToUserCart(userId, productsIdListDTO);
     }
 
     @DeleteMapping("/products/{productId}/{quantity}")
+    @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
     public void removeProductFromCart(
         @PathVariable("productId") UUID productId,
         @PathVariable("quantity") Integer quantity
@@ -39,12 +42,14 @@ public class CartController {
     }
 
     @DeleteMapping("/products/{productId}/all")
+    @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
     public void removeAllOfProductFromCart(@PathVariable("productId") UUID productId) {
         UUID userId = userService.getAuthenticatedLocalUserId();
         this.cartService.removeAllOfProductFromCart(userId, productId);
     }
 
     @GetMapping("/products")
+    @PreAuthorize("hasRole(@environment.getProperty('app.security.role-user'))")
     public List<ProductCartDTO> getAllCartProducts() {
         UUID userId = userService.getAuthenticatedLocalUserId();
         return this.cartService.getAllCartProducts(userId);
