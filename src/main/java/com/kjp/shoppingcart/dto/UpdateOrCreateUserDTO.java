@@ -34,7 +34,7 @@ public record UpdateOrCreateUserDTO(
         String lastName,
     @NotBlank(groups = CreateGroup.class)
         @Size(
-            max = 40,
-            min = 35,
+            max = 35,
+            min = 8,
             groups = {CreateGroup.class, UpdateGroup.class})
         String password) {}
