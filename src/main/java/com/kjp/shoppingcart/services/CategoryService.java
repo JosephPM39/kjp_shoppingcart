@@ -10,12 +10,11 @@ import com.kjp.shoppingcart.repositories.ICategoryRepository;
 import com.kjp.shoppingcart.repositories.IProductCategoryRepository;
 import com.kjp.shoppingcart.repositories.IProductRepository;
 import com.kjp.shoppingcart.utils.ObjectUtils;
+import jakarta.ws.rs.InternalServerErrorException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -121,10 +120,12 @@ public class CategoryService implements ICategoryService {
 
   @Override
   public List<ProductEntity> getProductsForCategory(UUID id) {
-    List<ProductCategoryEntity> productCategoryEntities = this.productCategoryRepository.findAllByCategoryIdEquals(id);
+    List<ProductCategoryEntity> productCategoryEntities =
+        this.productCategoryRepository.findAllByCategoryIdEquals(id);
     List<ProductEntity> productEntities = new ArrayList<>();
     for (ProductCategoryEntity productCategoryEntity : productCategoryEntities) {
-      Optional<ProductEntity> product = this.productRepository.findById(productCategoryEntity.getProductId());
+      Optional<ProductEntity> product =
+          this.productRepository.findById(productCategoryEntity.getProductId());
       if (product.isEmpty()) {
         throw new InternalServerErrorException(" Problems with DB ");
       }

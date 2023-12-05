@@ -6,7 +6,6 @@ import com.kjp.shoppingcart.dto.UpdateOrCreateUserDTO;
 import com.kjp.shoppingcart.services.IAuthService;
 import com.kjp.shoppingcart.services.IUserService;
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;

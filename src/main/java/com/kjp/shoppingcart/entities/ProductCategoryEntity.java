@@ -20,18 +20,10 @@ public class ProductCategoryEntity extends BaseEntity {
   private UUID categoryId;
 
   @ManyToOne
-  @JoinColumn(
-      name = "product_id",
-      nullable = false,
-      insertable = false,
-      updatable = false)
+  @JoinColumn(name = "product_id", nullable = false, insertable = false, updatable = false)
   private ProductEntity product;
 
   @ManyToOne
-  @JoinColumn(
-      name = "category_id",
-      nullable = false,
-      insertable = false,
-      updatable = false)
+  @JoinColumn(name = "category_id", nullable = false, insertable = false, updatable = false)
   private CategoryEntity category;
 }

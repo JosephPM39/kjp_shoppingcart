@@ -4,13 +4,10 @@ import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.exceptions.BadStrategySearchParams;
 import com.kjp.shoppingcart.services.IProductService;
 import com.kjp.shoppingcart.services.patterns.search_product_chain.SearchProductStrategyEnum;
-import java.util.Optional;
-import java.util.UUID;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,14 +32,14 @@ public class ProductController {
   public Page<ProductEntity> getAll(
       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSizeParam,
       @RequestParam(name = "pageNumber", defaultValue = "0") Integer pageNumberParam,
-      @RequestParam(name = "strategy", defaultValue = "NONE") SearchProductStrategyEnum strategyParam,
+      @RequestParam(name = "strategy", defaultValue = "NONE")
+          SearchProductStrategyEnum strategyParam,
       @RequestParam(name = "strategyValue", defaultValue = "") String strategyValueParam) {
 
     Optional<Integer> pageSize = Optional.ofNullable(pageSizeParam);
     Optional<Integer> pageNumber = Optional.ofNullable(pageNumberParam);
     Optional<SearchProductStrategyEnum> strategy = Optional.ofNullable(strategyParam);
     Optional<String> strategyValue = Optional.ofNullable(strategyValueParam);
-
 
     if (isOnlyOneOfBothPresent(strategy, strategyValue)) {
       String error =
@@ -78,7 +75,8 @@ public class ProductController {
 
   @PatchMapping("/{id}")
   @PreAuthorize("hasRole(@environment.getProperty('app.auth.role-admin'))")
-  public void update(@PathVariable UUID id, @Validated(UpdateGroup.class) @RequestBody ProductEntity product) {
+  public void update(
+      @PathVariable UUID id, @Validated(UpdateGroup.class) @RequestBody ProductEntity product) {
     productService.update(id, product);
   }
 

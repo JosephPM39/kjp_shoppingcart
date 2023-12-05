@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "com.kjp.shoppingcart.services")
 @ComponentScan(basePackages = "com.kjp.shoppingcart.repositories")
 @ComponentScan(basePackages = "com.kjp.shoppingcart.config")
-@ComponentScan(basePackages = "com.kjp.shoppingcart.anotations")
 public class ShoppingcartApplication {
 
   public static void main(String[] args) {

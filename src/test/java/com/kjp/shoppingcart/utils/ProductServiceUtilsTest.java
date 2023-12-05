@@ -1,16 +1,14 @@
 package com.kjp.shoppingcart.utils;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class ProductServiceUtilsTest {
 
-    @Test
-    void throwIfProductNotFound() {
-    }
+  @Test
+  void throwIfProductNotFound() {}
 
-    @Test
-    void throwIfSomeProductNotFound() {
-    }
+  @Test
+  void throwIfSomeProductNotFound() {}
 }

@@ -4,20 +4,13 @@ import com.kjp.shoppingcart.validations.groups.CreateGroup;
 import com.kjp.shoppingcart.validations.groups.UpdateGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
 
 @Getter
 @Setter
@@ -25,7 +18,10 @@ import net.minidev.json.annotate.JsonIgnore;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryEntity extends BaseEntity {
-  @Size(max = 40, min = 1, groups = {CreateGroup.class, UpdateGroup.class})
+  @Size(
+      max = 40,
+      min = 1,
+      groups = {CreateGroup.class, UpdateGroup.class})
   @NotBlank(groups = CreateGroup.class)
   @Column(length = 40, nullable = false, unique = true)
   private String name;
@@ -40,5 +36,4 @@ public class CategoryEntity extends BaseEntity {
   @NotNull(groups = CreateGroup.class)
   @Column(nullable = false)
   private boolean disabled = false;
-
 }

@@ -2,9 +2,6 @@ package com.kjp.shoppingcart.dto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-
-import com.kjp.shoppingcart.validations.groups.CreateGroup;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder

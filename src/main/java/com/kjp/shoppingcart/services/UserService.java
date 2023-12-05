@@ -89,7 +89,8 @@ public class UserService implements IUserService {
     if (user.isPresent()) {
       return user.get();
     }
-    throw new ResourceNotFoundException("User not found with the keycloakId: ".concat(keycloakId.toString()));
+    throw new ResourceNotFoundException(
+        "User not found with the keycloakId: ".concat(keycloakId.toString()));
   }
 
   public UserEntity findOrCreateUserByKeycloakId(UUID keycloakId) {

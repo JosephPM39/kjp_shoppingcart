@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -15,8 +12,7 @@ import lombok.Setter;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class BaseEntity {
-  @Id
-  private UUID id;
+  @Id private UUID id;
 
   @Column(name = "updated_at")
   private Timestamp updatedAt;

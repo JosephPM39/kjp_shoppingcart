@@ -69,7 +69,8 @@ public class OpinionService implements IOpinionService {
       this.voteRepository.deleteById(userVote.get().getId());
       return;
     }
-    throw new ResourceNotFoundException("The actual user don't has a vote for the product with id: ".concat(productId.toString()));
+    throw new ResourceNotFoundException(
+        "The actual user don't has a vote for the product with id: ".concat(productId.toString()));
   }
 
   @Override
@@ -104,22 +105,31 @@ public class OpinionService implements IOpinionService {
 
   @Override
   public void removeReview(UUID userId, UUID productId) {
-    Optional<ReviewEntity> reviewEntityOptional = this.reviewRepository.findFirstByUserIdEqualsAndProductIdEquals(userId, productId);
+    Optional<ReviewEntity> reviewEntityOptional =
+        this.reviewRepository.findFirstByUserIdEqualsAndProductIdEquals(userId, productId);
     if (reviewEntityOptional.isPresent()) {
       this.reviewRepository.deleteById(reviewEntityOptional.get().getId());
       return;
     }
-    throw new ResourceNotFoundException("The actual user don't has a review for the product with the id: ".concat(productId.toString()));
+    throw new ResourceNotFoundException(
+        "The actual user don't has a review for the product with the id: "
+            .concat(productId.toString()));
   }
 
   @Override
   public void updateReview(UUID userId, ReviewDTO reviewDTO) {
     ReviewEntity reviewChanges = ReviewMapper.getReviewEntity(userId, reviewDTO);
-    Optional<ReviewEntity> oldReview = this.reviewRepository.findFirstByUserIdEqualsAndProductIdEquals(userId, reviewChanges.getProductId());
+    Optional<ReviewEntity> oldReview =
+        this.reviewRepository.findFirstByUserIdEqualsAndProductIdEquals(
+            userId, reviewChanges.getProductId());
     if (oldReview.isEmpty()) {
-      throw new ResourceNotFoundException("The actual user don't has a review for the product with the id: ".concat(reviewDTO.productId().toString()));
+      throw new ResourceNotFoundException(
+          "The actual user don't has a review for the product with the id: "
+              .concat(reviewDTO.productId().toString()));
     }
-    ReviewEntity newReview = ObjectUtils.getInstanceWithNotNullFields(reviewChanges, oldReview.get(), ReviewEntity.class);
+    ReviewEntity newReview =
+        ObjectUtils.getInstanceWithNotNullFields(
+            reviewChanges, oldReview.get(), ReviewEntity.class);
     newReview.setId(oldReview.get().getId());
     newReview.setCreatedAt(oldReview.get().getCreatedAt());
 

@@ -2,7 +2,7 @@ package com.kjp.shoppingcart.config;
 
 import java.util.*;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,12 +18,12 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
   private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
       new JwtGrantedAuthoritiesConverter();
+  private ApiEnvConfig apiEnvConfig;
 
-  @Value("${jwt.auth.converter.principal-attribute}")
-  private String principalAttribute;
-
-  @Value("${jwt.auth.converter.resource-id}")
-  private String resourceId;
+  @Autowired
+  public JwtAuthenticationConverter(ApiEnvConfig apiEnvConfig) {
+    this.apiEnvConfig = apiEnvConfig;
+  }
 
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
@@ -46,11 +46,11 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     resourceAccess = jwt.getClaim("resource_access");
 
-    if (resourceAccess.get(resourceId) == null) {
+    if (resourceAccess.get(apiEnvConfig.getKEYCLOAK_CLIENT_ID()) == null) {
       return List.of();
     }
 
-    resources = (Map<String, Object>) resourceAccess.get(resourceId);
+    resources = (Map<String, Object>) resourceAccess.get(apiEnvConfig.getKEYCLOAK_CLIENT_ID());
 
     if (resources.get("roles") == null) {
       return List.of();
@@ -66,8 +66,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
   private String getPrincipalName(Jwt jwt) {
     String claimName = JwtClaimNames.SUB;
 
-    if (principalAttribute != null) {
-      claimName = principalAttribute;
+    if (apiEnvConfig.getKEYCLOAK_JWT_PRINCIPAL_ATTRIBUTE() != null) {
+      claimName = apiEnvConfig.getKEYCLOAK_JWT_PRINCIPAL_ATTRIBUTE();
     }
 
     return jwt.getClaim(claimName);

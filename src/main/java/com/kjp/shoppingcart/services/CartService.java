@@ -10,9 +10,8 @@ import com.kjp.shoppingcart.exceptions.ResourceNotFoundException;
 import com.kjp.shoppingcart.mappers.ProductCartMapper;
 import com.kjp.shoppingcart.repositories.*;
 import com.kjp.shoppingcart.utils.ProductServiceUtils;
-import java.util.*;
-
 import jakarta.ws.rs.InternalServerErrorException;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,12 +58,15 @@ public class CartService implements ICartService {
   @Override
   public void removeAllOfProductFromCart(UUID userId, UUID productId) {
     CartEntity userCart = getUserCart(userId);
-    Optional<ProductCartEntity> productCart = this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
+    Optional<ProductCartEntity> productCart =
+        this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
     if (productCart.isPresent()) {
       this.productCartRepository.deleteById(productCart.get().getId());
       return;
     }
-    throw new ResourceNotFoundException("The actual user don't has i his cart, a product with the id: ".concat(productId.toString()));
+    throw new ResourceNotFoundException(
+        "The actual user don't has in the cart, a product with the id: "
+            .concat(productId.toString()));
   }
 
   @Override
@@ -97,7 +99,8 @@ public class CartService implements ICartService {
     }
 
     if (quantity.equals(prod.getQuantity())) {
-      Optional<ProductCartEntity> productCart = this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
+      Optional<ProductCartEntity> productCart =
+          this.productCartRepository.findFirstByCartIdAndProductId(userCart.getId(), productId);
       if (productCart.isEmpty()) {
         throw new InternalServerErrorException("Product cart not found, but could be present");
       }
@@ -151,6 +154,7 @@ public class CartService implements ICartService {
       return userCart;
     }
     CartEntity userCart = new CartEntity();
+    userCart.setId(UUID.randomUUID());
     userCart.setStatus(CartStatusEnum.PENDING);
     userCart.setUserId(userId);
     this.cartRepository.save(userCart);

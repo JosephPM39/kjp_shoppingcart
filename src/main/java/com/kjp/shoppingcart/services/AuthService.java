@@ -1,12 +1,14 @@
 package com.kjp.shoppingcart.services;
 
+import com.kjp.shoppingcart.config.ApiEnvConfig;
 import com.kjp.shoppingcart.dto.SignInCredentialsDTO;
 import com.kjp.shoppingcart.dto.TokenDTO;
 import jakarta.ws.rs.InternalServerErrorException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,20 +21,13 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class AuthService implements IAuthService {
 
-  @Value("${jwt.auth.converter.resource-id}")
-  private String resourceId;
-
-  @Value("${resource-secret}")
-  private String resourceSecret;
-
-  @Value("${spring.security.oauth2.resourceserver.jwt.generate-token}")
-  private String loginUrl;
-
   private final RestTemplate restTemplate;
+  private final ApiEnvConfig apiEnvConfig;
 
   @Autowired
-  public AuthService(RestTemplate restTemplate) {
+  public AuthService(RestTemplate restTemplate, ApiEnvConfig apiEnvConfig) {
     this.restTemplate = restTemplate;
+    this.apiEnvConfig = apiEnvConfig;
   }
 
   @Override
@@ -43,17 +38,26 @@ public class AuthService implements IAuthService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-    body.add("client_id", resourceId);
+    body.add("client_id", apiEnvConfig.getKEYCLOAK_CLIENT_ID());
     body.add("grant_type", "password");
-    body.add("client_secret", resourceSecret);
+    body.add("client_secret", apiEnvConfig.getKEYCLOAK_CLIENT_SECRET());
     body.add("username", credentials.userName());
     body.add("password", credentials.password());
 
     HttpEntity<MultiValueMap<String, String>> request =
         new HttpEntity<MultiValueMap<String, String>>(body, headers);
 
-    ResponseEntity<JSONObject> response =
-        restTemplate.postForEntity(loginUrl, request, JSONObject.class);
+    ResponseEntity<JSONObject> response;
+
+    try {
+      response =
+          restTemplate.postForEntity(
+              new URI(apiEnvConfig.getKEYCLOAK_SERVER_GENERATE_TOKEN_URL()),
+              request,
+              JSONObject.class);
+    } catch (URISyntaxException e) {
+      throw new InternalServerErrorException("Some problem with the signIn method uri");
+    }
 
     JSONObject bodyResponse = response.getBody();
 

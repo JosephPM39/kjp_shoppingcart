@@ -21,7 +21,7 @@ public class SecurityConfig {
 
   @Autowired
   public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter) {
-      this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+    this.jwtAuthenticationConverter = jwtAuthenticationConverter;
   }
 
   @Bean
@@ -36,8 +36,7 @@ public class SecurityConfig {
               http.requestMatchers("/login").permitAll();
               http.anyRequest().authenticated();
             })
-        .oauth2Login(
-            oauth -> oauth.loginPage("/login"))
+        .oauth2Login(oauth -> oauth.loginPage("/login"))
         .oauth2ResourceServer(
             oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
         .sessionManagement(

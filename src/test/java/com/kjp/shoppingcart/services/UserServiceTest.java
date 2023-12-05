@@ -1,68 +1,53 @@
 package com.kjp.shoppingcart.services;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class UserServiceTest {
 
-    @Test
-    void findAllUsers() {
-    }
+  @Test
+  void findAllUsers() {}
 
-    @Test
-    void findLocalUserByKeycloakId() {
-    }
+  @Test
+  void findLocalUserByKeycloakId() {}
 
-    @Test
-    void findAllLocalUsers() {
-    }
+  @Test
+  void findAllLocalUsers() {}
 
-    @Test
-    void searchUserByUsername() {
-    }
+  @Test
+  void searchUserByUsername() {}
 
-    @Test
-    void findUserByKeycloakId() {
-    }
+  @Test
+  void findUserByKeycloakId() {}
 
-    @Test
-    void getAuthenticatedUserKeycloakId() {
-    }
+  @Test
+  void getAuthenticatedUserKeycloakId() {}
 
-    @Test
-    void getAuthenticatedLocalUserId() {
-    }
+  @Test
+  void getAuthenticatedLocalUserId() {}
 
-    @Test
-    void searchLocalUserByUsername() {
-    }
+  @Test
+  void searchLocalUserByUsername() {}
 
-    @Test
-    void findUserById() {
-    }
+  @Test
+  void findUserById() {}
 
-    @Test
-    void createUser() {
-    }
+  @Test
+  void createUser() {}
 
-    @Test
-    void deleteUser() {
-    }
+  @Test
+  void deleteUser() {}
 
-    @Test
-    void banUser() {
-    }
+  @Test
+  void banUser() {}
 
-    @Test
-    void quitBanUser() {
-    }
+  @Test
+  void quitBanUser() {}
 
-    @Test
-    void updateUser() {
-    }
+  @Test
+  void updateUser() {}
 
-    @Test
-    void addAdminRoleToUser() {
-    }
+  @Test
+  void addAdminRoleToUser() {}
 }

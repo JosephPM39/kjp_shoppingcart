@@ -1,9 +1,8 @@
 package com.kjp.shoppingcart.repositories;
 
 import com.kjp.shoppingcart.entities.ProductEntity;
-import java.util.UUID;
-
 import jakarta.transaction.Transactional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

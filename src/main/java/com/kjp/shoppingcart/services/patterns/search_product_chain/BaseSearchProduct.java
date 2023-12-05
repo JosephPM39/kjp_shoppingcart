@@ -24,7 +24,7 @@ public abstract class BaseSearchProduct implements ISearchProduct {
     if (SearchProductStrategyEnum.NONE != strategy) {
       if (nextSearch == null) {
         throw new BadStrategyConfigException(
-                "No chain handler for Search products strategy: ".concat(strategy.name()));
+            "No chain handler for Search products strategy: ".concat(strategy.name()));
       }
       return nextSearch.search(value, pageable, strategy);
     }
