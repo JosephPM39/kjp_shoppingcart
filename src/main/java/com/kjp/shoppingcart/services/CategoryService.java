@@ -110,12 +110,14 @@ public class CategoryService implements ICategoryService {
     Optional<ProductCategoryEntity> productCategoryEntity =
         this.productCategoryRepository.findFirstByCategoryIdAndProductId(
             category.getId(), productId);
-    if (productCategoryEntity.isEmpty()) {
-      throw new ResourceNotFoundException(
-          "The Category with the ID: "
-              .concat(id.toString())
-              .concat(" Not has the product with the ID: ".concat(productId.toString())));
+    if (productCategoryEntity.isPresent()) {
+      this.productCategoryRepository.deleteById(productCategoryEntity.get().getId());
+      return;
     }
+    throw new ResourceNotFoundException(
+        "The Category with the ID: "
+            .concat(id.toString())
+            .concat(" Not has the product with the ID: ".concat(productId.toString())));
   }
 
   @Override

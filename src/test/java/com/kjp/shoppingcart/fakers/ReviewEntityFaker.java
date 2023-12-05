@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class ReviewEntityFaker {
-  public static ReviewEntity getFake(List<ProductEntity> list, UUID userId) {
+  public static ReviewEntity getFake() {
     Faker faker = new Faker();
     ReviewEntity fake = new ReviewEntity();
     fake.setId(UUID.randomUUID());
-    fake.setProductId(FakerUtils.randomIdFromEntityList(list));
-    fake.setUserId(userId);
+    fake.setProductId(UUID.randomUUID());
+    fake.setUserId(UUID.randomUUID());
     fake.setTitle(FakerUtils.truncateFromStart(faker.commerce().productName(), 40));
     fake.setDescription(FakerUtils.truncateFromStart(faker.commerce().material(), 255));
     fake.setCreatedAt(FakerUtils.getTimestamp());
@@ -21,11 +21,10 @@ public class ReviewEntityFaker {
     return fake;
   }
 
-  public static List<ReviewEntity> getFakes(
-      List<ProductEntity> list, UUID userId, Integer quantity) {
+  public static List<ReviewEntity> getFakes(Integer quantity) {
     List<ReviewEntity> fakes = new ArrayList<>();
     for (int i = 0; i < quantity; i++) {
-      fakes.add(getFake(list, userId));
+      fakes.add(getFake());
     }
     return fakes;
   }

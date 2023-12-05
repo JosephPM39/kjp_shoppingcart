@@ -38,7 +38,7 @@ class CartServiceTest {
   void addProductsToUserCart() {
     when(cartRepository.findFirstByUserId(any(UUID.class))).thenReturn(Optional.empty());
 
-    ProductsIdListDTO productsIdListDTO = ProductsIdListDTOFaker.getFake(10);
+    ProductsIdListDTO productsIdListDTO = ProductsIdListDTOFaker.getFake(10, true);
     assertEquals(10, productsIdListDTO.productsId().length);
 
     when(productRepository.existsById(any(UUID.class))).thenReturn(true);
@@ -60,7 +60,7 @@ class CartServiceTest {
     CartEntity cartEntity = CartEntityFaker.getFake();
     when(cartRepository.findFirstByUserId(any(UUID.class))).thenReturn(Optional.of(cartEntity));
 
-    ProductsIdListDTO productsIdListDTO = ProductsIdListDTOFaker.getFake(10);
+    ProductsIdListDTO productsIdListDTO = ProductsIdListDTOFaker.getFake(10, true);
     assertEquals(10, productsIdListDTO.productsId().length);
 
     when(productRepository.existsById(any(UUID.class))).thenReturn(true);
