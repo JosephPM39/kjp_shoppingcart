@@ -31,7 +31,9 @@ public class ProductEntity extends BaseEntity {
     this.discountOffer = discountOffer;
     this.description = description;
     this.code = code;
-    this.categories = categories.stream().toList();
+    if (categories != null) {
+      this.categories = categories.stream().toList();
+    }
     this.disabled = disabled;
   }
 

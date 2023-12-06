@@ -1,5 +1,6 @@
 package com.kjp.shoppingcart.utils;
 
+import jakarta.ws.rs.InternalServerErrorException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -100,7 +101,7 @@ public class ObjectUtils {
       compatibleConstructor.setAccessible(true);
       return classObject.cast(compatibleConstructor.newInstance(ordenedData));
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage());
+      throw new InternalServerErrorException(e);
     }
   }
 
