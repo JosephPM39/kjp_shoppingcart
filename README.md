@@ -61,3 +61,14 @@ b. Como Comprador puedo:
 +Escribir referencias de productos y/o darle like o dislike
 +Mostrar mi pedido
 +Cancelar un pedido
+
+## Diagrama de la base de datos
+![image](https://raw.githubusercontent.com/JosephPM39/kjp_shoppingcart/master/images-readme/KJP_ShoppingCart-DB_Desing.jpg)
+
+## Code Coverage
+
+### Intellij Idea
+![image](https://raw.githubusercontent.com/JosephPM39/kjp_shoppingcart/master/images-readme/code-coverage-intellij.png)
+
+### Jacoco
+![image](https://raw.githubusercontent.com/JosephPM39/kjp_shoppingcart/master/images-readme/code-coverage-jacoco.png)
