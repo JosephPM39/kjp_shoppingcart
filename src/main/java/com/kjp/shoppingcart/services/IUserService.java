@@ -16,8 +16,6 @@ public interface IUserService {
 
   public UserRepresentation searchUserByUsername(String username);
 
-  public UserEntity findUserByKeycloakId(UUID keycloakId);
-
   public UUID getAuthenticatedUserKeycloakId();
 
   public UUID getAuthenticatedLocalUserId();

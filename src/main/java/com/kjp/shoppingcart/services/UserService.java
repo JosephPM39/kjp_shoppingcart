@@ -83,16 +83,6 @@ public class UserService implements IUserService {
     return user.get();
   }
 
-  @Override
-  public UserEntity findUserByKeycloakId(UUID keycloakId) {
-    Optional<UserEntity> user = userRepository.findFirstByKeycloakIdEquals(keycloakId);
-    if (user.isPresent()) {
-      return user.get();
-    }
-    throw new ResourceNotFoundException(
-        "User not found with the keycloakId: ".concat(keycloakId.toString()));
-  }
-
   public UserEntity findOrCreateUserByKeycloakId(UUID keycloakId) {
     Optional<UserEntity> user = this.userRepository.findFirstByKeycloakIdEquals(keycloakId);
     if (user.isPresent()) {
