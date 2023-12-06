@@ -1,7 +1,6 @@
 package com.kjp.shoppingcart.fakers;
 
 import com.github.javafaker.Faker;
-import com.kjp.shoppingcart.entities.ProductEntity;
 import com.kjp.shoppingcart.entities.ReviewEntity;
 import java.util.ArrayList;
 import java.util.List;

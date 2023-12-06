@@ -158,7 +158,9 @@ class CategoryServiceTest {
 
   @Test
   void removeProductFromCategoryWithNotProduct() {
-    when(productCategoryRepositoryMock.findFirstByCategoryIdAndProductId(any(UUID.class), any(UUID.class))).thenReturn(Optional.empty());
+    when(productCategoryRepositoryMock.findFirstByCategoryIdAndProductId(
+            any(UUID.class), any(UUID.class)))
+        .thenReturn(Optional.empty());
     CategoryEntity category = CategoryEntityFaker.getFake();
     when(categoriesRepositoryMock.findById(any(UUID.class))).thenReturn(Optional.of(category));
     try {
@@ -168,7 +170,8 @@ class CategoryServiceTest {
       assertInstanceOf(ResourceNotFoundException.class, e);
     }
     verify(categoriesRepositoryMock).findById(any(UUID.class));
-    verify(productCategoryRepositoryMock).findFirstByCategoryIdAndProductId(any(UUID.class), any(UUID.class));
+    verify(productCategoryRepositoryMock)
+        .findFirstByCategoryIdAndProductId(any(UUID.class), any(UUID.class));
   }
 
   @Test
